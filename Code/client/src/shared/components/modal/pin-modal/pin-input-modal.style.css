@@ -1,0 +1,26 @@
+.app-modal {
+  .ant-modal-content {
+    .ant-modal-title {
+      font-size: 20px;
+      text-align: center;
+    }
+  }
+  .ant-modal-footer {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.pin-input-modal .ant-input-password {
+  position: relative;
+}
+
+.pin-input-modal .ant-input-password .ant-input-suffix {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+}
+
+.pin-input-modal .ant-input-affix-wrapper input {
+  text-align: center !important;
+}

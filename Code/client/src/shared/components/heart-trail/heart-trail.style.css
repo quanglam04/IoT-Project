@@ -1,0 +1,19 @@
+.heart {
+  position: fixed;
+  pointer-events: none;
+  font-size: 24px;
+  animation: fadeOut 1s ease-out forwards;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80%) scale(1.5);
+  }
+}

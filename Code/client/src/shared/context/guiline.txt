@@ -1,0 +1,12 @@
+
+// 1. Define những dữ liệu sẽ được lưu trong context
+
+// 2. Tạo Context
+
+// 3. Tạo provider bọc ngoài Component
+
+// 4. Những chỗ nào cần sử dụng giá trị của context => Bọc ProviderComponent bên ngoài
+
+// 5. Tạo Hooks Custom dể lấy giá trị trong context ( hoặc lấy luôn bằng useContext(<Truyền tên Context> chỗ này chủ yếu để xem có xử lý thêm logic gì không  ))
+
+// 6. Lấy giá trị trong Context sử dụng Hook đã tạo ở trên
