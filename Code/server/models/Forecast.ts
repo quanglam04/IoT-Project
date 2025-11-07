@@ -21,7 +21,6 @@ const ForecastSchema = new Schema({
         type: String
     }
 });
-
 // cái này chưa biết để nhiều dự báo hay bao nhiêu nên để mặc định 1 nhé
 ForecastSchema.index({ date: 1 }, { unique: true });
 
