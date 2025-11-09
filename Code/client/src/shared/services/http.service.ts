@@ -4,11 +4,15 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig
 } from 'axios'
+import { HTTP_STATUS, type ApiResponse } from '../types/http.type'
+import type { LoginResponse } from '../types/auth.type'
+import storageService from './storage.service'
 
 class _Http {
   private readonly instance: AxiosInstance
-
+  private access_token: string
   constructor() {
+    this.access_token = storageService.getAccessTokenFromLS()
     this.instance = axios.create({
       baseURL: import.meta.env.VITE_BACKEND_URL, // thường sẽ là localhost:8080//api/v1/
       timeout: 10000,
@@ -33,6 +37,12 @@ class _Http {
     // Config Response Interceptor
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
+        const { url } = response.config
+        if (url === 'api/user/login' && response.status === HTTP_STATUS.OK) {
+          const data = response.data as ApiResponse<LoginResponse>
+          this.access_token = data.data!.access_token
+          storageService.set('accessToken', this.access_token)
+        }
         return response
       },
       (error) => {

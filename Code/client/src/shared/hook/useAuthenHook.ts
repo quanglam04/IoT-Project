@@ -1,5 +1,6 @@
 const useAuthenHook = () => {
-  const isLogin: boolean = true // lấy từ AuthContext
+  // const isLogin = localStorge.getItem('token) ? true : false
+  const isLogin: boolean = true
   return { isLogin }
 }
 export default useAuthenHook

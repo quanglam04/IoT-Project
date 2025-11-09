@@ -1,20 +1,72 @@
 import type { RouteObject } from 'react-router-dom'
-import Home from './pages/home'
 import NotFoundPage from './pages/not-found'
+import PageLayoutPage from './layout/page-layout'
+import DashBoardPage from './pages/dashboard'
+import ChartPage from './pages/charts'
+import AISchedulePage from './pages/ai-schedule'
+import ManualControlPage from './pages/manual-control'
+import LogPage from './pages/logs'
+import ReportPage from './pages/reports'
+import ConfigPage from './pages/config'
+import UserPage from './pages/users'
+import ProtectedRotes from '@/shared/components/protected-routes'
+import LoginPage from './pages/login'
+import NotificationPage from './pages/notification'
 
 const router: RouteObject[] = [
   {
     path: '/',
+    element: (
+      <ProtectedRotes>
+        <PageLayoutPage />
+      </ProtectedRotes>
+    ),
     children: [
       {
         index: true,
-        element: <Home />
+        element: <DashBoardPage />
+      },
+      {
+        path: 'chart-page',
+        element: <ChartPage /> //user, admin
+      },
+      {
+        path: 'ai-schedule-page',
+        element: <AISchedulePage /> //user, admin
+      },
+      {
+        path: 'manual-control-page',
+        element: <ManualControlPage /> //user, admin
+      },
+      {
+        path: 'log-page',
+        element: <LogPage /> //user, admin
+      },
+      {
+        path: 'report-page',
+        element: <ReportPage /> // admin
+      },
+      {
+        path: 'config-page',
+        element: <ConfigPage /> // admin
+      },
+      {
+        path: 'user-page',
+        element: <UserPage /> // admin
+      },
+      {
+        path: 'notification-page',
+        element: <NotificationPage /> //user, admin
       },
       {
         path: '*',
         element: <NotFoundPage />
       }
     ]
+  },
+  {
+    path: '/login',
+    element: <LoginPage />
   }
 ]
 
