@@ -2,7 +2,7 @@ const Header = () => {
   return (
     <div className='flex w-full items-center justify-between px-4 py-2'>
       <div className='flex items-center space-x-2 rounded-lg border border-gray-300 bg-white px-4 py-2'>
-        <span className='font-medium text-gray-700'>IoT Application</span>
+        <span className='font-bold text-gray-700'>IoT Application - Group 6</span>
       </div>
 
       <div className='flex items-center gap-3'>
