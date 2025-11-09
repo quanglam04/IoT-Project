@@ -1,23 +1,24 @@
 import PinInputModal from '@/shared/components/modal/pin-modal'
 import useNotificationHook from '@/shared/hook/useNotificationHook'
 import { Button, notification } from 'antd'
+import useHomeHook from './useHomeHook'
 
 const Home = () => {
-  const { showError, showSuccess } = useNotificationHook()
+  const { dataSensor } = useHomeHook()
 
   return (
-    <div className='flex justify-center'>
-      <h1 className='mt-50 mr-10 font-bold'>Base Frontend Create 15/06/2025</h1>
-      {/* <HeartTrail /> */}
-      <PinInputModal onSubmit={() => {}} open={false} />
-      <Button
-        onClick={() => {
-          showSuccess('Thành công rồi đó')
-        }}
-      >
-        Nhấp vào đâyssss
-      </Button>
-    </div>
+    <>
+      <div className='flex min-h-screen flex-col items-center justify-center text-2xl'>
+        <div className='mb-10 text-3xl font-bold'>Data from Sensor</div>
+        <div className='space-y-4 text-center'>
+          <div>Temperature: {dataSensor.temperature}</div>
+          <div>Humidity: {dataSensor.humidity}</div>
+          <div>Light: {dataSensor.light}</div>
+          <div>SoilMoisture: {dataSensor.soilMoisture}</div>
+          <div>Date: {dataSensor.timestamp}</div>
+        </div>
+      </div>
+    </>
   )
 }
 export default Home

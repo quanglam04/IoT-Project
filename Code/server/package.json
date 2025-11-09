@@ -22,12 +22,15 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "mongoose": "^8.19.3",
+    "mqtt": "^5.14.1",
+    "socket.io": "^4.8.1",
     "winston": "^3.18.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.0",
+    "@types/socket.io": "^3.0.1",
     "@types/winston": "^2.4.4",
     "eslint": "^9.9.0",
     "prettier": "^3.3.3",
