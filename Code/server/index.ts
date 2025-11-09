@@ -9,6 +9,7 @@ import cors from 'cors';
 import { startMqttSubscriptions } from './routes/mqtt.router';
 import { createSocketServer } from './config/socket.config';
 import { setupSocket } from './sockets';
+import { userRouter } from './routes/user.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,7 +20,7 @@ app.use(
 );
 
 app.use(express.json());
-
+app.use('/api/users', userRouter)
 const httpServer = http.createServer(app)
 export const io = createSocketServer(httpServer)
 
