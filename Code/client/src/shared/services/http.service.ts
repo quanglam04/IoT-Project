@@ -25,10 +25,10 @@ class _Http {
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         // Có thể thêm token vào đây
-        // const token = localStorage.getItem('token')
-        // if (token) {
-        //   config.headers.Authorization = `Bearer ${token}`
-        // }
+        const token = localStorage.getItem('accessToken')
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
         return config
       },
       (error) => Promise.reject(error)
@@ -38,10 +38,17 @@ class _Http {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
         const { url } = response.config
-        if (url === 'api/user/login' && response.status === HTTP_STATUS.OK) {
+        console.log('URL:', url)
+        if (url === '/users/login' && response.status === HTTP_STATUS.OK) {
           const data = response.data as ApiResponse<LoginResponse>
-          this.access_token = data.data!.access_token
-          storageService.set('accessToken', this.access_token)
+          console.log(`data:::`, data)
+          const fullName = data.data.user_info.fullName
+          const role = data.data.user_info.role
+          this.access_token = data.data.access_token
+
+          storageService.set('access_token', this.access_token)
+          storageService.set('role', role)
+          storageService.set('fullName', fullName)
         }
         return response
       },

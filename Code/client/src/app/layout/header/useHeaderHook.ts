@@ -1,0 +1,15 @@
+import useNotificationHook from '@/shared/hook/useNotificationHook'
+import storageService from '@/shared/services/storage.service'
+import { useNavigate } from 'react-router-dom'
+
+const useHeaderHook = () => {
+  const navigate = useNavigate()
+  const { showSuccess } = useNotificationHook()
+  const handleLogout = () => {
+    navigate('/login')
+    storageService.clear()
+    showSuccess('Đăng xuất thành công')
+  }
+  return { handleLogout }
+}
+export default useHeaderHook

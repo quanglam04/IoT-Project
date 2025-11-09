@@ -5,8 +5,18 @@ interface LoginRequest {
 
 interface LoginResponse {
   access_token: string
-  refresh_token: string
-  login_at: string
+  user_info: {
+    username: string
+    fullName: string
+    address: string
+    phoneNumber: string
+    role: ROLE
+  }
+}
+
+export enum ROLE {
+  Admin = 'ADMIN',
+  User = 'USER'
 }
 
 export type { LoginRequest, LoginResponse }

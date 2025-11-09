@@ -3,7 +3,10 @@ class _StorageService {
     localStorage.setItem(key, value)
   }
   public get(key: string) {
-    localStorage.getItem(key)
+    return localStorage.getItem(key)
+  }
+  public clear() {
+    localStorage.clear()
   }
   public getAccessTokenFromLS = () => localStorage.getItem('accessToken') || ''
 }

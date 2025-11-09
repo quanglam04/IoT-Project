@@ -1,17 +1,18 @@
 interface Menu {
   title: string
   navigateTo: string
+  requireAdmin: boolean
 }
 
 const listMenu: Menu[] = [
-  { title: 'Dashboard', navigateTo: '/' },
-  { title: 'Charts', navigateTo: '/chart-page' },
-  { title: 'AI Schedule', navigateTo: '/ai-schedule-page' },
-  { title: 'Manual Control', navigateTo: '/manual-control-page' },
-  { title: 'Logs', navigateTo: '/log-page' },
-  { title: 'Reports', navigateTo: '/report-page' },
-  { title: 'Config', navigateTo: '/config-page' },
-  { title: 'Users', navigateTo: '/user-page' },
-  { title: 'Notification', navigateTo: '/notification-page' }
+  { title: 'Dashboard', navigateTo: '/', requireAdmin: false },
+  { title: 'Charts', navigateTo: '/chart-page', requireAdmin: false },
+  { title: 'AI Schedule', navigateTo: '/ai-schedule-page', requireAdmin: false },
+  { title: 'Manual Control', navigateTo: '/manual-control-page', requireAdmin: false },
+  { title: 'Logs', navigateTo: '/log-page', requireAdmin: false },
+  { title: 'Reports', navigateTo: '/report-page', requireAdmin: true },
+  { title: 'Config', navigateTo: '/config-page', requireAdmin: true },
+  { title: 'Users', navigateTo: '/user-page', requireAdmin: true },
+  { title: 'Notification', navigateTo: '/notification-page', requireAdmin: false }
 ]
 export { listMenu }

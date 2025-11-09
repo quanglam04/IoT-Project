@@ -1,20 +1,5 @@
 ## Description
 
-A Base React TypeScript project
-
-## Coding Convention
-
-<div>
-  <span style="margin-right: 5px">- Bấm vào đây để xem: </span>
-  <a 
-    href="https://blog.trinhquanglam.id.vn/h%E1%BB%8Dc%20t%E1%BA%ADp/2025/07/01/Coding-convention-khi-code-Frontend.html"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Coding Convention
-  </a>
-</div>
-
 ## Project Structure
 
 ```

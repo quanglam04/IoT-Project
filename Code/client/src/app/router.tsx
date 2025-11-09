@@ -12,6 +12,7 @@ import UserPage from './pages/users'
 import ProtectedRotes from '@/shared/components/protected-routes'
 import LoginPage from './pages/login'
 import NotificationPage from './pages/notification'
+import RequireAdmin from '@/shared/components/require-admin'
 
 const router: RouteObject[] = [
   {
@@ -44,15 +45,27 @@ const router: RouteObject[] = [
       },
       {
         path: 'report-page',
-        element: <ReportPage /> // admin
+        element: (
+          <RequireAdmin>
+            <ReportPage />
+          </RequireAdmin>
+        ) // admin
       },
       {
         path: 'config-page',
-        element: <ConfigPage /> // admin
+        element: (
+          <RequireAdmin>
+            <ConfigPage />
+          </RequireAdmin>
+        ) // admin
       },
       {
         path: 'user-page',
-        element: <UserPage /> // admin
+        element: (
+          <RequireAdmin>
+            <UserPage />
+          </RequireAdmin>
+        ) // admin
       },
       {
         path: 'notification-page',
