@@ -1,20 +1,80 @@
 import type { RouteObject } from 'react-router-dom'
-import Home from './pages/home'
 import NotFoundPage from './pages/not-found'
+import PageLayoutPage from './layout/page-layout'
+import DashBoardPage from './pages/dashboard'
+import ChartPage from './pages/charts'
+import AISchedulePage from './pages/ai-schedule'
+import ManualControlPage from './pages/manual-control'
+import LogPage from './pages/logs'
+import ReportPage from './pages/reports'
+import ConfigPage from './pages/config'
+import UserPage from './pages/users'
+import ProtectedRotes from '@/shared/components/protected-routes'
+import LoginPage from './pages/login'
+import NotificationPage from './pages/notification'
 
 const router: RouteObject[] = [
   {
     path: '/',
+    element: <PageLayoutPage />,
     children: [
       {
         index: true,
-        element: <Home />
+        element: <DashBoardPage />
+      },
+      {
+        path: 'chart-page',
+        element: <ChartPage />
+      },
+      {
+        path: 'ai-schedule-page',
+        element: <AISchedulePage />
+      },
+      {
+        path: 'manual-control-page',
+        element: <ManualControlPage />
+      },
+      {
+        path: 'log-page',
+        element: <LogPage />
+      },
+      {
+        path: 'report-page',
+        element: (
+          <ProtectedRotes>
+            <ReportPage />
+          </ProtectedRotes>
+        )
+      },
+      {
+        path: 'config-page',
+        element: (
+          <ProtectedRotes>
+            <ConfigPage />
+          </ProtectedRotes>
+        )
+      },
+      {
+        path: 'user-page',
+        element: (
+          <ProtectedRotes>
+            <UserPage />
+          </ProtectedRotes>
+        )
+      },
+      {
+        path: 'notification-page',
+        element: <NotificationPage />
       },
       {
         path: '*',
         element: <NotFoundPage />
       }
     ]
+  },
+  {
+    path: '/login',
+    element: <LoginPage />
   }
 ]
 
