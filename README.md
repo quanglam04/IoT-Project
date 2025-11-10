@@ -10,40 +10,59 @@ Ngoài ra, hệ thống cũng có thể điều khiển **máy bơm, động cơ
 
 ## 🛠️ Tech Stack
 
-### Development Tools
+## Development & Version Control
 
-- **Arduino IDE**
-- **Visual Studio Code**
+- **Môi trường phát triển:**
+  - Arduino IDE
+  - Visual Studio Code
+- **Quản lý mã nguồn:**
+  - Git/Github Server
+- **Mạch nguyên lý:**
+  - Proteus 8
 
-### Backend / Server
+## Backend / Server & Protocol
 
-- **NodeJS (22.17.1)**
-- **ExpressJS**
-- **Web Service**: HTTP
+- **Core:**
+  - NodeJS
+- **Web Framework:**
+  - ExpressJS
+- **Ngôn ngữ:**
+  - TypeScript
+- **Web Protocol:**
+  - HTTP
+- **Iot Protocol:**
+  - MQTT Protocol
+- **Real-time:**
+  - Socket.io
 
-### Database & Cloud
+## Database & Cloud
 
-- **MongoDB**
-- **MongoDB Atlas**
+- **Databse:**
+  - MongoDB
+  - MongoDB Atlas (Cloud)
+- **MQTT Broker:**
+  - HiveMQ Cloud
 
-### AI / ML
+## AI / ML
 
-- **TensorFlow.js** (inference trên Node: `@tensorflow/tfjs-node`)
-- (Tùy chọn) **TensorFlow (Python)** hoặc **PyTorch** để huấn luyện offline và convert model sang TF.js format.
+- **Core Model:**
+  - XGBoost
 
-### Hardware
+## Hardware & Phần cứng
 
-- **Vi điều khiển:** ESP32
+- **Vi điều khiển:**
+  - ESP32(DevKit V1)
 - **Cảm biến:**
-  - SHT30 (nhiệt độ, độ ẩm)
-  - BMP280, BME280 (áp suất không khí, nhiệt độ, độ ẩm)
-  - Cảm biến mưa
+  - BME280: cảm biến môi trường
+  - DHT22: cảm biến nhiệt độ, độ ẩm
 - **Thiết bị điều khiển:**
-  - Nguồn 12V
-  - Module bơm
-  - Động cơ DC 1 chiều
-  - Linh kiện vỏ, phụ kiện khác
-- **Mạch nguyên lý:** Proteus 8
+  - Bơm nước mini 12V
+- **Module điều khiển:**
+  - Module MOSFET
+- **Nguồn:**
+  - 12V
+- **Giao diện người dùng:**
+  - ReactJS
 
 ## Project Structure
 
@@ -51,27 +70,44 @@ Ngoài ra, hệ thống cũng có thể điều khiển **máy bơm, động cơ
 IoT/
 │
 ├── Code/
-│   ├── ai/                       # Thư mục AI model (train/inference code)
-│   │    └── ...
+│   ├── ai/                       # Thư mục AI model (train/inference code - Python)
+│   │    ├── data/                # Dữ liệu huấn luyện và kiểm thử
+│   │    ├── models/              # Model đã train (weights, checkpoints)
+│   │    ├── src/                 # Code xử lý dữ liệu, tiền xử lý, inference
+│   │    ├── train/               # Script huấn luyện model
+│   │    ├── .env                 # Config bí mật (API key, đường dẫn model,…)
+│   │    └── requirements.txt     # Thư viện Python cần thiết (TensorFlow, scikit-learn,…)
 │   │
-│   ├── hardware/                 # Code chạy trên ESP32 (C++)
-│   │    └── example.cpp          # Ví dụ code kết nối & gửi dữ liệu
+│   ├── hardware/                 # Code chạy trên ESP32 (C++ / Arduino)
+│   │    ├── control/             # Xử lý điều khiển (bơm nước, quạt, relay,…)
+│   │    ├── network/             # Cấu hình & quản lý kết nối Wi-Fi, MQTT, HTTP,...
+│   │    ├── sensors/             # Đọc dữ liệu cảm biến (nhiệt độ, độ ẩm, ánh sáng,…)
+│   │    ├── utils/               # Hàm tiện ích dùng chung (convert, log, delay,…)
+│   │    ├── config.h             # File cấu hình (SSID, password, broker, topic,…)
+│   │    └── main.ino             # Chương trình chính của ESP32
 │   │
 │   ├── server/                   # Backend server (NodeJS + Express)
 │   │    ├── config/              # Cấu hình (DB connection, env)
 │   │    ├── controllers/         # Xử lý logic cho từng route
+│   │    ├── middlewares/         # Xử lý logic cho từng route
 │   │    ├── models/              # Định nghĩa schema cho MongoDB
 │   │    ├── node_modules/        # Thư viện cài từ npm
 │   │    ├── public/              # Static files (CSS, JS, images)
 │   │    ├── routes/              # Khai báo các API endpoint + web routes
+│   │    ├── sockets/             # Khai báo socket giao tiếp real-time
+│   │    ├── services/            # Xử lý logic nghiệp vụ
 │   │    ├── templates/           # View engine (EJS templates)
 │   │    ├── utils/               # Các hàm tiện ích (gọi AI service, helper)
+│   │    ├── shared/              # Code tái sử dụng chung
+│   │    │    ├── constants/      # Các hằng số cấu hình, giá trị dùng chung
+│   │    │    └── types/          # Định nghĩa kiểu dữ liệu, interface
 │   │    ├── .env                 # Config bí mật (DB URI, API key)
 │   │    ├── .gitignore           # File loại trừ khi push Git
 │   │    ├── index.js             # File chính, khởi tạo Express server
 │   │    ├── package.json         # Khai báo dependencies
-│   │    └── package-lock.json
-│   └──client/                    # Frontend (React + TypeScript, Vite)
+│   │    └── package-lock.json    # File lock dependencies
+│   │
+│   └── client/                   # Frontend (React + TypeScript, Vite)
 │        ├── public/              # Static assets (favicon, images tĩnh,…)
 │        ├── src/                 # Source code chính
 │        │   ├── app/             # Core app: layout, pages, styles
@@ -85,8 +121,7 @@ IoT/
 │        │   │   ├── fonts/       # Font chữ
 │        │   │   └── images/      # Hình ảnh
 │        │   │
-│        │   ├── services/        # Các service gọi API
-│        │   │   └── client.service.ts  # Hàm call API client
+│        │   ├── services/        # Các service gọi API, thao tác Socket
 │        │   │
 │        │   └── shared/          # Code tái sử dụng chung
 │        │       ├── components/  # Component tái sử dụng (button, modal,…)
@@ -108,12 +143,14 @@ IoT/
 │        ├── index.html           # HTML template
 │        ├── package.json         # Khai báo dependencies frontend
 │        └── package-lock.json    # File lock dependencies frontend
-├── Documents/               # Tài liệu báo cáo & slide
-│    ├── Báo cáo cuối kỳ.docx
+│
+├── Documents/                    # Tài liệu báo cáo & slide
 │    ├── Báo cáo giữa kỳ.docx
+│    ├── Báo cáo cuối kỳ.docx
 │    └── slide.txt
 │
-└── README.md                # File mô tả dự án
+└── README.md                     # File mô tả dự án
+
 ```
 
 ---
