@@ -1,20 +1,22 @@
 import useNotificationHook from './useNotificationHook'
 
 const NotificationPage = () => {
-  const { handleMarkAllAsRead, notifications } = useNotificationHook()
+  const { handleMarkAllAsRead, notifications, isReadAll } = useNotificationHook()
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
         {/* Header with Mark as read button */}
         <div className='mb-8 flex items-center justify-between'>
-          <h2 className='text-3xl font-bold'>Notifications</h2>
+          <h2 className='text-3xl font-bold'>Thông báo</h2>
 
           <button
             onClick={handleMarkAllAsRead}
             className='flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-800'
           >
-            <span>Mark as read</span>
-            <div className='h-5 w-5 rounded border-2 border-gray-400'></div>
+            <span>Đánh dấu đã đọc</span>
+            <div className='flex h-5 w-5 items-center justify-center rounded border-2 border-gray-400'>
+              {isReadAll ? 'X' : ''}
+            </div>
           </button>
         </div>
 

@@ -37,6 +37,7 @@ class SocketService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onReceiveDataFromSensor(callback: (data: DataSensor) => void) {
     this.socket?.on('sensor/data/push', callback)
+    // bên server sẽ đẩy sang 60p 1 lần
   }
 }
 

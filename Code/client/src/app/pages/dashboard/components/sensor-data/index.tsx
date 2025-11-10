@@ -4,7 +4,7 @@ const SensorData = () => {
   return (
     <div className='h-full rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
       <div className='mb-6 flex items-start justify-between'>
-        <h2 className='text-2xl font-bold'>Sensor data</h2>
+        <h2 className='text-2xl font-bold'>Dữ liệu từ cảm biến</h2>
         <div className='text-right text-sm'>
           <div className='text-gray-600'>Cập nhật lúc</div>
           <div className='font-medium'>{sensorData.lastUpdate}</div>

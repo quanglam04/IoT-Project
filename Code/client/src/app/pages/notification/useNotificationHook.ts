@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 const useNotificationHook = () => {
+  const [isReadAll, setIsReadAll] = useState<boolean>(false)
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -24,8 +25,10 @@ const useNotificationHook = () => {
 
   const handleMarkAllAsRead = () => {
     setNotifications(notifications.map((notif) => ({ ...notif, isRead: true })))
+    setIsReadAll(true)
+    console.log(`isReadAll : ${isReadAll}`)
   }
 
-  return { handleMarkAllAsRead, notifications, setNotifications }
+  return { handleMarkAllAsRead, notifications, setNotifications, isReadAll }
 }
 export default useNotificationHook

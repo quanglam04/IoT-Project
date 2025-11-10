@@ -3,16 +3,16 @@ import { decisions } from '../../dummy'
 const RecentAIDecision = () => {
   return (
     <div className='h-full rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
-      <h2 className='mb-6 text-2xl font-bold'>Recent AI Decision</h2>
+      <h2 className='mb-6 text-2xl font-bold'>Quyết định của AI gần đây</h2>
 
       <div className='overflow-x-auto'>
         <table className='w-full'>
           <thead>
             <tr className='border-b-2 border-gray-200'>
-              <th className='px-2 py-3 text-left font-semibold'>Time</th>
+              <th className='px-2 py-3 text-left font-semibold'>Thời gian</th>
               <th className='px-2 py-3 text-left font-semibold'>p(60m)</th>
-              <th className='px-2 py-3 text-left font-semibold'>Action</th>
-              <th className='px-2 py-3 text-left font-semibold'>Note</th>
+              <th className='px-2 py-3 text-left font-semibold'>Hành động</th>
+              <th className='px-2 py-3 text-left font-semibold'>Ghi chú</th>
             </tr>
           </thead>
           <tbody>

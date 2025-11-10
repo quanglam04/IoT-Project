@@ -1,28 +1,17 @@
-const AISuggest = () => {
-  const suggestedActions = [
-    {
-      time: '06:00',
-      probability: '0.82',
-      action: 'Hoãn 90m'
-    },
-    {
-      time: '10:00',
-      probability: '0.30',
-      action: 'Tưới 20m'
-    }
-  ]
+import { suggestedActions } from '../../dummy'
 
+const AISuggest = () => {
   return (
     <div className='max-w-3xl rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
-      <h2 className='mb-6 text-2xl font-bold'>AI Suggested Actions</h2>
+      <h2 className='mb-6 text-2xl font-bold'>Hành động được AI đề xuất</h2>
 
       <div className='overflow-x-auto'>
         <table className='w-full'>
           <thead>
             <tr className='border-b-2 border-gray-300'>
-              <th className='px-6 py-4 text-center text-lg font-bold'>Time</th>
+              <th className='px-6 py-4 text-center text-lg font-bold'>Thời gian</th>
               <th className='px-6 py-4 text-center text-lg font-bold'>p</th>
-              <th className='px-6 py-4 text-center text-lg font-bold'>Action</th>
+              <th className='px-6 py-4 text-center text-lg font-bold'>Hành động</th>
             </tr>
           </thead>
           <tbody>

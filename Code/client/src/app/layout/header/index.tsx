@@ -20,12 +20,7 @@ const Header = () => {
         {/* Đăng xuất */}
         <div className='flex cursor-pointer items-center space-x-2 rounded-lg border border-gray-300 bg-white px-4 py-2 transition-colors hover:bg-gray-50'>
           <div className='flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white'>🔒</div>
-          <span
-            className='font-medium text-gray-700'
-            onClick={() => {
-              handleLogout()
-            }}
-          >
+          <span className='font-medium text-gray-700' onClick={() => handleLogout()}>
             Đăng xuất
           </span>
         </div>

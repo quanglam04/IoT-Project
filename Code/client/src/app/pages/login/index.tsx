@@ -23,7 +23,10 @@ const LoginPage = () => {
             Đăng nhập
           </Button>
 
-          <div className='mt-2 cursor-pointer text-center' onClick={() => navigate('/register')}>
+          <div
+            className='mt-2 cursor-pointer text-center hover:text-blue-300 hover:underline'
+            onClick={() => navigate('/register')}
+          >
             Chưa có tài khoản? Click vào đây để đăng ký
           </div>
         </Form>

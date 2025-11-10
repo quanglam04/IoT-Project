@@ -4,7 +4,7 @@ const AIPrediction = () => {
   return (
     <>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
-        <h2 className='mb-4 text-2xl font-bold'>AI Prediction (60m)</h2>
+        <h2 className='mb-4 text-2xl font-bold'>Dự đoán của AI (60m)</h2>
 
         <div>
           <div className='mb-2 text-lg'>

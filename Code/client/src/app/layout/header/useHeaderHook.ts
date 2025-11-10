@@ -6,6 +6,7 @@ const useHeaderHook = () => {
   const navigate = useNavigate()
   const { showSuccess } = useNotificationHook()
   const handleLogout = () => {
+    console.log('logout')
     navigate('/login')
     storageService.clear()
     showSuccess('Đăng xuất thành công')
