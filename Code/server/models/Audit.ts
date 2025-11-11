@@ -2,11 +2,11 @@ import mongoose from 'mongoose'
 const { Schema } = mongoose
 
 export enum AuditEvent {
-  USER_LOGIN = 'USER_LOGIN',
-  GET_USER_LIST = 'GET_USER_LIST',
-  GET_DEVICE_COUNT = 'GET_DEVICE_COUNT',
-  GET_AUDIT_LOGS = 'GET_AUDIT_LOGS',
-  MANUAL_PUMP_CONTROL = 'MANUAL_PUMP_CONTROL'
+  USER_LOGIN = 'Người dùng đã đăng nhập vào hệ thống',
+  GET_USER_LIST = 'Lấy danh sách người dùng',
+  GET_DEVICE_COUNT = 'Đếm số lượng thiết bị kết nối',
+  GET_ESP32_REPORT = 'Xuất báo cáo dữ liệu từ ESP32',
+  MANUAL_PUMP_CONTROL = 'Điều khiển bơm thủ công',
 }
 
 const AuditSchema = new Schema(
