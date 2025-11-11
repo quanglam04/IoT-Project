@@ -5,7 +5,7 @@ const ManualControlPage = () => {
   const [currentMode, setCurrentMode] = useState('AI Auto')
 
   return (
-    <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
+    <div className='flex justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='max-w-4xl rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
         <h2 className='mb-8 text-3xl font-bold'>Manual Control</h2>
 
