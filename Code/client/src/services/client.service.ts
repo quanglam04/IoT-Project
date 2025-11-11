@@ -28,6 +28,19 @@ class _ClientService {
     const response = await http.get<ApiResponse<GetLogsResponse[]>>('/users/get-logs')
     return response
   }
+
+  async exportCSVSensor() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await http.get<ApiResponse<any>>('/users/reports/esp/export', {
+      responseType: 'blob'
+    })
+    return response
+  }
+
+  // async exportCSVSensor() {
+  //   const response = await http.get<ApiResponse<GetLogsResponse[]>>('/users/get-logs')
+  //   return response
+  // }
 }
 const clientService = new _ClientService()
 
