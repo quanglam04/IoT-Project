@@ -3,7 +3,7 @@ import { HTTP_STATUS } from '@/shared/types/http.type'
 import { useEffect, useState } from 'react'
 
 const useDeviceListHook = () => {
-  const [count, setCount] = useState<number>(0)
+  const [count, setCount] = useState<number>(1)
 
   const fetchNumberOfDevice = async () => {
     const response = await clientService.getCountDevice()

@@ -8,5 +8,5 @@ joblib
 requests
 flask
 python-dotenv
-joblib
 openai>=1.40.0
+paho-mqtt>=1.6.1

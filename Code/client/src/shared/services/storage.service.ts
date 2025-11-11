@@ -8,7 +8,7 @@ class _StorageService {
   public clear() {
     localStorage.clear()
   }
-  public getAccessTokenFromLS = () => localStorage.getItem('accessToken') || ''
+  public getAccessTokenFromLS = () => localStorage.getItem('access_token') || ''
 }
 
 const storageService = new _StorageService()

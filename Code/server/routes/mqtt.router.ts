@@ -2,6 +2,7 @@ import mqttClient from '../config/mqtt.config';
 import logger from '../utils/log';
 import { handleSensorData } from '../controllers/sensor.mqtt.controller';
 import { handleDeviceStatus } from '../services/device.service';
+import Topic from '../shared/constants/topic';
 
 export const startMqttSubscriptions = () => {
   mqttClient.on('connect', () => {
@@ -25,7 +26,7 @@ export const startMqttSubscriptions = () => {
     const payload = message.toString();
 
     //controller tương ứng
-    if (topic === 'sensor/data/push') {
+    if (topic === Topic.SENSOR_DATA_PUSH) {
       handleSensorData(payload);
     } 
 
@@ -33,6 +34,7 @@ export const startMqttSubscriptions = () => {
     else if (topic.startsWith('devices/status/')) {
       handleDeviceStatus(topic, payload);
     } 
+
     else {
       logger.warn(`Không có trình xử lý (handler) cho topic: ${topic}`);
     }
