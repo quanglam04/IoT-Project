@@ -5,7 +5,9 @@ import logger from "../utils/log"
 import * as jwt from 'jsonwebtoken'
 import { AuthRequest } from '../shared/types/util.type'
 import { getDeviceCount } from '../services/device.service'
-import { error } from 'console'
+import Audit, { AuditEvent } from '../models/Audit'
+import { Parser } from 'json2csv'
+import SensorData from '../models/SensorData'
 
 
 const login = async (req: Request, res: Response) => {
@@ -46,6 +48,7 @@ const login = async (req: Request, res: Response) => {
     const userResponseData = {
       id: user.id,
       username: user.username,
+      email: user.email,
       fullName: user.fullName,
       address: user.address,
       phoneNumber: user.phoneNumber,
@@ -73,7 +76,7 @@ const getListUser = async (req: AuthRequest, res: Response) => {
   try {
     const currentUserRole = (req.user as jwt.JwtPayload).role
     if(currentUserRole === UserRole.ADMIN){
-      const listUser = await User.find().select('fullName address phoneNumber role')
+      const listUser = await User.find().select('email fullName address phoneNumber role')
       if (listUser.length) {
         return res.status(HTTPStatus.OK).json({
           status: HTTPStatus.OK,
@@ -122,11 +125,10 @@ const getCountDevice = async (req: AuthRequest, res: Response) => {
       });
     }
     else{
-      logger.error('Lỗi không thể lấy số lượng thiết bị')
-      return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-        status: HTTPStatus.INTERNAL_SERVER_ERROR,
-        message: 'Lỗi server',
-        data: null
+      logger.error('Bạn không có quyền hạn này')
+      return res.status(HTTPStatus.FORBIDDEN).json({
+        status: HTTPStatus.FORBIDDEN,
+        message: 'Bạn không có quyền hạn này',
       })
     }
   } catch (error : any) {
@@ -139,4 +141,124 @@ const getCountDevice = async (req: AuthRequest, res: Response) => {
   }
 }
 
-export { login, getListUser, getCountDevice}
+const formatDate = (date: Date): string => {
+  if (!date) return '';
+
+  // Phần Ngày (Date)
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() bắt đầu từ 0
+  const year = date.getFullYear();
+
+  // Phần Giờ (Time)
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+
+  // Kết hợp
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
+const getLogs = async (req: AuthRequest, res: Response) => {
+  logger.info('Lấy Logs hệ thống')
+  try {
+    const username = (req.user as jwt.JwtPayload).username
+    const userRole = (req.user as jwt.JwtPayload).role
+
+    if(userRole !== 'ADMIN'){
+      logger.error('Bạn không có quyền hạn này')
+      return res.status(HTTPStatus.FORBIDDEN).json({
+        status: HTTPStatus.FORBIDDEN,
+        message: 'Bạn không có quyền hạn này',
+      })
+    }
+    
+
+    const logs = (await Audit.find().sort({createdAt: -1})).map(log => {
+      // Chuyển Mongoose document thành plain object
+      const logObject = log.toObject();
+      
+      return {
+        ...logObject,
+        // Ghi đè trường 'createdAt' bằng chuỗi đã định dạng
+        createdAt: formatDate(logObject.createdAt),
+      };
+    });
+
+    return res.status(HTTPStatus.OK).json({
+      status: HTTPStatus.OK,
+      message: `[${username}] Lấy toàn bộ Log thành công`,
+      data: logs
+    })
+  } catch (error : any) {
+    logger.error('Lỗi không thể lấy nhật ký: ', error)
+    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+      status: HTTPStatus.INTERNAL_SERVER_ERROR,
+      message: 'Lỗi server',
+    })
+  }
+}
+
+const exportESP32Report = async (req: AuthRequest, res: Response) => {
+  logger.info('Xuất báo cáo dữ liệu của ESP32')
+  try {
+    const username = (req.user as jwt.JwtPayload).username
+    const userRole = (req.user as jwt.JwtPayload).role
+
+    if(userRole !== 'ADMIN'){
+      logger.error('Bạn không có quyền hạn này')
+      return res.status(HTTPStatus.FORBIDDEN).json({
+        status: HTTPStatus.FORBIDDEN,
+        message: 'Bạn không có quyền hạn này',
+      })
+    }
+
+    const newAuditLog = new Audit({
+      actor: username,
+      event: AuditEvent.GET_ESP32_REPORT,
+      details: `Admin [${username}] đã xuất dữ liệu từ các cảm biến`
+    })
+    await newAuditLog.save()
+
+    // Lấy dữ liệu từ DB (dùng .lean() để tăng tốc độ)
+    const allDataSensor = await SensorData.find().sort({ timestamp: 1}).lean();
+
+    if (!allDataSensor || allDataSensor.length === 0) {
+      return res.status(HTTPStatus.NOT_FOUND).json({
+        message: 'Không có dữ liệu cảm biến để xuất.'
+      });
+    }
+
+    const formatData = allDataSensor.map(log => ({
+      date_time: formatDate(log.timestamp),
+      temperature: log.temperature,
+      humidity: log.humidity,
+      pressure_hpa: log.pressureHpa,
+      soil_moisture: log.soilMoisture
+    }));
+
+    // cấu hình file csv
+    const fields = ['date_time', 'temperature', 'humidity', 'pressure_hpa', 'soil_moisture'];
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(formatData);
+
+    // Thiết lập Headers để trình duyệt tải file về
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+
+    // Đặt tên file là 'bao_cao_cam_bien_esp32.csv'
+    res.setHeader('Content-Disposition', 'attachment; filename="bao_cao_cam_bien_esp32.csv"');
+
+    // Gửi file csv
+    return res.status(HTTPStatus.OK).send(Buffer.from(csv, 'utf-8'));
+
+  } catch (error : any) {
+    logger.error('Lỗi không thể xuất báo cáo cảm biến: ', error);
+    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+      status: HTTPStatus.INTERNAL_SERVER_ERROR,
+      message: 'Lỗi server',
+      data: null
+    });
+  }
+  
+}
+
+export { login, getListUser, getCountDevice, getLogs, exportESP32Report}

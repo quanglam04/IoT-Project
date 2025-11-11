@@ -3,6 +3,8 @@ import SensorData from '../models/SensorData';
 import mqttClient from '../config/mqtt.config';
 import { Server } from 'socket.io';
 import { io } from '..';
+import Topic from '../shared/constants/topic';
+import Event from '../shared/constants/event';
 
 /**
  * Hàm làm tròn số 2 số sau thập phân
@@ -20,16 +22,20 @@ const roundToTwo = (num: number): number => {
  * @returns {định dạng ngày sau khi xử lý}
  */
 const formatDate = (date: string): string => {
-
   const newdate = new Date(date);
 
+  // Lấy ngày, tháng, năm
   const day = newdate.getDate().toString().padStart(2, '0');
-
   const month = (newdate.getMonth() + 1).toString().padStart(2, '0'); // getMonth() bắt đầu từ 0
-
   const year = newdate.getFullYear();
 
-  return `${day}/${month}/${year}`;
+  // Lấy giờ, phút, giây
+  const hours = newdate.getHours().toString().padStart(2, '0');
+  const minutes = newdate.getMinutes().toString().padStart(2, '0');
+  const seconds = newdate.getSeconds().toString().padStart(2, '0');
+
+  // Kết hợp lại
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };
 
 /**
@@ -43,7 +49,7 @@ export const handleSensorData = async (payload: string) => {
     const emitData = {
       temperature: roundToTwo(data.temperature),
       humidity: roundToTwo(data.humidity),
-      light: roundToTwo(data.light),
+      pressureHpa: roundToTwo(data.pressure_hpa),
       soilMoisture: roundToTwo(data.soilMoisture),
       timestamp: formatDate(data.timestamp)
     };
@@ -56,7 +62,7 @@ export const handleSensorData = async (payload: string) => {
 
     // phát sự kiện tới client, bên client lắng nghe để lấy dữ liệu
     if(io){
-      io.emit('sensor/data/push', emitData)
+      io.emit(Event.SENSOR_DATA_PUSH, emitData)
       logger.info(`Đã emit "sensor/data/push" tới client`);
       logger.info(JSON.stringify(emitData));
     }

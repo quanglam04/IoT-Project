@@ -15,7 +15,6 @@ const useLoginHook = () => {
   const navigate = useNavigate()
   const handleLogin = async () => {
     const values = form.getFieldsValue()
-    console.log(values)
     try {
       const response = await clientService.login(values)
       if (response.status === HTTP_STATUS.OK) {

@@ -10,6 +10,8 @@ import { startMqttSubscriptions } from './routes/mqtt.router';
 import { createSocketServer } from './config/socket.config';
 import { setupSocket } from './sockets';
 import { userRouter } from './routes/user.routes';
+import { limiter } from './middlewares/rate-limit.middleware';
+import { microRouter } from './routes/micro.roures';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,7 +22,15 @@ app.use(
 );
 
 app.use(express.json());
+
+// trước API, topic -> cho tất cả request
+app.use(limiter);
+
+// các API
 app.use('/api/users', userRouter)
+app.use('/api/micro-controller', microRouter)
+
+
 const httpServer = http.createServer(app)
 export const io = createSocketServer(httpServer)
 

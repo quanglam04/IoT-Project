@@ -1,16 +1,15 @@
+import storageService from '@/shared/services/storage.service'
 import type { DataSensor } from '@/shared/types/sensor.type'
 import { io, type Socket } from 'socket.io-client'
 
 class SocketService {
   private socket: Socket | null = null
-
   connect() {
     if (this.socket?.connected) {
       return this.socket
     }
 
     this.socket = io(import.meta.env.VITE_SOCKET_URL, {
-      // auth: { token },
       transports: ['websocket']
     })
 

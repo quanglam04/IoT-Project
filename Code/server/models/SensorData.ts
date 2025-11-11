@@ -11,7 +11,7 @@ const SensorDataSchema = new Schema(
             type: Number,
             required: true
         },
-        light: {
+        pressureHpa: {
             type: Number,
             required: true
         },

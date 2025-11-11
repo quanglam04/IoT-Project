@@ -27,9 +27,16 @@ interface GetCountDeviceResposne {
   numberOfDevices: number
 }
 
+interface GetLogsResponse {
+  createdAt: string
+  actor: string
+  event: string
+  details: string
+}
+
 export enum ROLE {
   Admin = 'ADMIN',
   User = 'USER'
 }
 
-export type { LoginRequest, LoginResponse, User, GetCountDeviceResposne }
+export type { LoginRequest, LoginResponse, User, GetCountDeviceResposne, GetLogsResponse }
