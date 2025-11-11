@@ -1,8 +1,8 @@
 #pragma once
 
 // Cấu hình WiFi
-#define WIFI_SSID       "Hung Ly"      // SSID WiFi 
-#define WIFI_PASSWORD   "888888888"  // Mật khẩu
+#define WIFI_SSID       "Bo"      // SSID WiFi 
+#define WIFI_PASSWORD   "hwgc5970"  // Mật khẩu
 
 // MQTT Broker
 #define MQTT_BROKER     "6737c5bbe1cd42bc9fe23790f95a7e72.s1.eu.hivemq.cloud"     // Địa chỉ public broker
@@ -30,7 +30,7 @@
 #define PIN_OVERRIDE_BTN    33      // Nút nhấn thủ công bật/tắt bơm
 
 // Timing
-#define SENSOR_INTERVAL_MS  30000UL             // Thời gian giữa hai lần đọc cảm biến và gửi dữ liệu là 30s 
+#define SENSOR_INTERVAL_MS  15000UL             // Thời gian giữa hai lần đọc cảm biến và gửi dữ liệu là 30s 
 #define MQTT_RECONNECT_MS   5000UL              // Thời gian chờ giữa hai lần thử reconnect MQTT là 5s
 #define MANUAL_OVERRIDE_TIMEOUT_MS  1200000UL   // Thời gian cho phép chạy bơm ở chế độ thủ công tối đa là 20 phút
 
