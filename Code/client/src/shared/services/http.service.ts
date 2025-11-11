@@ -38,7 +38,6 @@ class _Http {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
         const { url } = response.config
-        console.log('URL:', url)
         if (url === '/users/login' && response.status === HTTP_STATUS.OK) {
           const data = response.data as ApiResponse<LoginResponse>
           console.log(`data:::`, data)

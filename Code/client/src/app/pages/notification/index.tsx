@@ -3,7 +3,7 @@ import useNotificationHook from './useNotificationHook'
 const NotificationPage = () => {
   const { handleMarkAllAsRead, notifications, isReadAll } = useNotificationHook()
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
+    <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
         {/* Header with Mark as read button */}
         <div className='mb-8 flex items-center justify-between'>
