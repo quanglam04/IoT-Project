@@ -8,7 +8,7 @@ const useHeaderHook = () => {
   const handleLogout = () => {
     console.log('logout')
     navigate('/login')
-    storageService.clear()
+    storageService.clearDataExcludeDataSensor()
     showSuccess('Đăng xuất thành công')
   }
   return { handleLogout }
