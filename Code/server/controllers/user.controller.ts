@@ -5,7 +5,9 @@ import logger from "../utils/log"
 import * as jwt from 'jsonwebtoken'
 import { AuthRequest } from '../shared/types/util.type'
 import { getDeviceCount } from '../services/device.service'
-import Audit from '../models/Audit'
+import Audit, { AuditEvent } from '../models/Audit'
+import { Parser } from 'json2csv'
+import SensorData from '../models/SensorData'
 
 
 const login = async (req: Request, res: Response) => {
@@ -159,7 +161,7 @@ const formatDate = (date: Date): string => {
 const getLogs = async (req: AuthRequest, res: Response) => {
   logger.info('Lấy Logs hệ thống')
   try {
-    const user = (req.user as jwt.JwtPayload).username
+    const username = (req.user as jwt.JwtPayload).username
     const userRole = (req.user as jwt.JwtPayload).role
 
     if(userRole !== 'ADMIN'){
@@ -184,7 +186,7 @@ const getLogs = async (req: AuthRequest, res: Response) => {
 
     return res.status(HTTPStatus.OK).json({
       status: HTTPStatus.OK,
-      message: 'Lấy toàn bộ Log thành công',
+      message: `[${username}] Lấy toàn bộ Log thành công`,
       data: logs
     })
   } catch (error : any) {
@@ -196,5 +198,67 @@ const getLogs = async (req: AuthRequest, res: Response) => {
   }
 }
 
+const exportESP32Report = async (req: AuthRequest, res: Response) => {
+  logger.info('Xuất báo cáo dữ liệu của ESP32')
+  try {
+    const username = (req.user as jwt.JwtPayload).username
+    const userRole = (req.user as jwt.JwtPayload).role
 
-export { login, getListUser, getCountDevice, getLogs}
+    if(userRole !== 'ADMIN'){
+      logger.error('Bạn không có quyền hạn này')
+      return res.status(HTTPStatus.FORBIDDEN).json({
+        status: HTTPStatus.FORBIDDEN,
+        message: 'Bạn không có quyền hạn này',
+      })
+    }
+
+    const newAuditLog = new Audit({
+      actor: username,
+      event: AuditEvent.GET_ESP32_REPORT,
+      details: `Admin [${username}] đã xuất dữ liệu từ các cảm biến`
+    })
+    await newAuditLog.save()
+
+    // Lấy dữ liệu từ DB (dùng .lean() để tăng tốc độ)
+    const allDataSensor = await SensorData.find().sort({ timestamp: 1}).lean();
+
+    if (!allDataSensor || allDataSensor.length === 0) {
+      return res.status(HTTPStatus.NOT_FOUND).json({
+        message: 'Không có dữ liệu cảm biến để xuất.'
+      });
+    }
+
+    const formatData = allDataSensor.map(log => ({
+      date_time: formatDate(log.timestamp),
+      temperature: log.temperature,
+      humidity: log.humidity,
+      pressure_hpa: log.pressureHpa,
+      soil_moisture: log.soilMoisture
+    }));
+
+    // cấu hình file csv
+    const fields = ['date_time', 'temperature', 'humidity', 'pressure_hpa', 'soil_moisture'];
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(formatData);
+
+    // Thiết lập Headers để trình duyệt tải file về
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+
+    // Đặt tên file là 'bao_cao_cam_bien_esp32.csv'
+    res.setHeader('Content-Disposition', 'attachment; filename="bao_cao_cam_bien_esp32.csv"');
+
+    // Gửi file csv
+    return res.status(HTTPStatus.OK).send(Buffer.from(csv, 'utf-8'));
+
+  } catch (error : any) {
+    logger.error('Lỗi không thể xuất báo cáo cảm biến: ', error);
+    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+      status: HTTPStatus.INTERNAL_SERVER_ERROR,
+      message: 'Lỗi server',
+      data: null
+    });
+  }
+  
+}
+
+export { login, getListUser, getCountDevice, getLogs, exportESP32Report}
