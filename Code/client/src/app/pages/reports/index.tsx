@@ -19,14 +19,14 @@ const ReportPage = () => {
         <div className='mt-8 flex gap-4'>
           <button
             onClick={handleExportSensorData}
-            className='flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 active:bg-blue-800'
+            className='flex-1 cursor-pointer rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 active:bg-blue-800'
           >
             Xuất báo cáo dữ liệu từ cảm biến
           </button>
 
           <button
             onClick={handleExportAIData}
-            className='flex-1 rounded-lg bg-green-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-700 active:bg-green-800'
+            className='flex-1 cursor-pointer rounded-lg bg-green-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-700 active:bg-green-800'
           >
             Xuất báo cáo dữ liệu từ AI xử lý
           </button>

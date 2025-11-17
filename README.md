@@ -13,12 +13,12 @@ Ngoài ra, hệ thống cũng có thể điều khiển **máy bơm, động cơ
 ## Development & Version Control
 
 - **Môi trường phát triển:**
-  - Arduino IDE
+  - PlatformIO
   - Visual Studio Code
 - **Quản lý mã nguồn:**
   - Git/Github Server
 - **Mạch nguyên lý:**
-  - Proteus 8
+  - Cirkit Designer
 
 ## Backend / Server & Protocol
 

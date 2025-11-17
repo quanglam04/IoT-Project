@@ -5,8 +5,10 @@ class _StorageService {
   public get(key: string) {
     return localStorage.getItem(key)
   }
-  public clear() {
-    localStorage.clear()
+  public clearDataExcludeDataSensor() {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('fullName')
+    localStorage.removeItem('role')
   }
   public getAccessTokenFromLS = () => localStorage.getItem('access_token') || ''
 }

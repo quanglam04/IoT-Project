@@ -27,7 +27,7 @@ const useLoginHook = () => {
         showSuccess('Đăng nhập thành công')
         navigate('/')
       } else {
-        storageService.clear()
+        storageService.clearDataExcludeDataSensor()
         showError('Tài khoản hoặc mật khẩu không chính xác')
       }
     } catch (e) {
