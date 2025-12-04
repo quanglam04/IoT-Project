@@ -5,7 +5,7 @@
 #define WIFI_PASSWORD   "hwgc5970"  // Mật khẩu
 
 // MQTT Broker
-#define MQTT_BROKER     "6737c5bbe1cd42bc9fe23790f95a7e72.s1.eu.hivemq.cloud"     // Địa chỉ public broker
+#define MQTT_BROKER     "c35f82397d674292948a051226f10fa6.s1.eu.hivemq.cloud"     // Địa chỉ public broker
 #define MQTT_PORT       8883
 #define MQTT_USER       "server"
 #define MQTT_PASS       "Server123456"
@@ -23,7 +23,7 @@
 #define TOPIC_DEVICE_LOG        "device/log/" DEVICE_ID         // Gửi log/cảnh báo về server => Publish
 
 // Pins
-#define PIN_SOIL_ADC        34      // Analog input của cảm biến độ ẩm đất
+#define PIN_SOIL_ADC        36      // Analog input của cảm biến độ ẩm đất
 #define PIN_PUMP            23      // Relay điều khiển motor
 #define I2C_SDA             21      // SDA
 #define I2C_SCL             22      // SCL            4       
@@ -42,4 +42,6 @@
 #define SOIL_RAW_WET   1000   // wet reading 
 
 // FOTA
-#define TOPIC_FOTA "device/control/fota"
+#define TOPIC_DEVICE_UPDATE "device/control/update"
+
+#define FOTA_URL "https://0mxrrtbd-8080.asse.devtunnels.ms/uploads/firmware_v5.bin"
