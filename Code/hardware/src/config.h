@@ -40,3 +40,6 @@
 // Soil calibration (raw ADC -> percent)
 #define SOIL_RAW_DRY   3000   // dry reading 
 #define SOIL_RAW_WET   1000   // wet reading 
+
+// FOTA
+#define TOPIC_FOTA "device/control/fota"
