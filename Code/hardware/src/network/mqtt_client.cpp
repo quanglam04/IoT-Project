@@ -29,6 +29,70 @@ d/6kDdOdAlkE0Ph7JvbAYETB95nTTjZht+SbpH8Cw+Pp0S1tXsvr17B8HXz/mQ==
 -----END CERTIFICATE-----
 )EOF";
 
+// =====================================================================
+// HÀM FOTA QUA HTTPS
+// =====================================================================
+bool perform_ota_update(const String& url) {
+    Serial.println("\n==============================");
+    Serial.println("🚀 FOTA START");
+    Serial.println("==============================");
+    Serial.println("📥 URL: " + url);
+
+    WiFiClientSecure client;
+    client.setInsecure();   // Không verify CA (linh hoạt cho mọi HTTPS)
+
+    HTTPClient https;
+    if (!https.begin(client, url)) {
+        Serial.println("❌ ERROR: Không thể kết nối URL firmware!");
+        return false;
+    }
+
+    int httpCode = https.GET();
+    if (httpCode != HTTP_CODE_OK) {
+        Serial.printf("❌ ERROR: HTTP GET thất bại (%d)\n", httpCode);
+        https.end();
+        return false;
+    }
+
+    int contentLength = https.getSize();
+    if (contentLength <= 0) {
+        Serial.println("❌ ERROR: File OTA rỗng hoặc sai!");
+        https.end();
+        return false;
+    }
+
+    Serial.printf("📦 Firmware size: %d bytes\n", contentLength);
+
+    // Chuẩn bị bộ nhớ Flash
+    if (!Update.begin(contentLength)) {
+        Serial.println("❌ ERROR: Không đủ bộ nhớ cho OTA!");
+        https.end();
+        return false;
+    }
+
+    WiFiClient* stream = https.getStreamPtr();
+    size_t written = Update.writeStream(*stream);
+
+    if (written != contentLength) {
+        Serial.printf("❌ ERROR: Chỉ ghi %d / %d bytes\n", written, contentLength);
+        https.end();
+        return false;
+    }
+
+    if (!Update.end()) {
+        Serial.printf("❌ ERROR OTA: %s\n", Update.errorString());
+        https.end();
+        return false;
+    }
+
+    Serial.println("✅ OTA Update thành công!");
+    Serial.println("🔄 Restart trong 1s...");
+    delay(1000);
+    ESP.restart();
+    return true;
+}
+
+
 // ========== Callback khi nhận message MQTT ==========
 void onMqttMessage(char* topic, byte* payload, unsigned int length) {
     String msg;
@@ -56,6 +120,25 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
         String state = pump_is_on() ? "ON" : "OFF";
         String logMsg = "{\"source\":\"MQTT\",\"pump\":\"" + state + "\"}";
         mqtt_publish(TOPIC_DEVICE_STATUS, logMsg);
+    }
+
+    // ===========================================================
+    // YÊU CẦU FOTA
+    // JSON mẫu:
+    // { "url": "https://myserver.com/firmware.bin" }
+    // ===========================================================
+    else if (String(topic) == TOPIC_DEVICE_UPDATE) {
+        Serial.println("🚀 FOTA command received");
+
+        if (!doc.containsKey("url")) {
+            Serial.println("⚠️ ERROR: không có trường \"url\"!");
+            return;
+        }
+
+        String otaUrl = doc["url"].as<String>();
+        Serial.println("🔗 OTA URL: " + otaUrl);
+
+        perform_ota_update(otaUrl);
     }
 }
 
@@ -110,3 +193,5 @@ void mqtt_publish(const char* topic, const String &payload) {
     mqttClient.publish(topic, payload.c_str());
     Serial.printf("📤 MQTT %s → %s\n", topic, payload.c_str());
 }
+
+
