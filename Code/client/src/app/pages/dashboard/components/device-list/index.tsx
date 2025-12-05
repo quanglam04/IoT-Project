@@ -18,7 +18,7 @@ const DeviceList = () => {
         ))}
       </div>
 
-      <h2 className='mt-2 mb-6 text-2xl font-bold'>Số lượng vi điều khiển trong mạng: ({count})</h2>
+      <h2 className='mt-2 mb-6 text-2xl font-bold'>Số lượng vi điều khiển trong mạng: 1</h2>
     </div>
   )
 }

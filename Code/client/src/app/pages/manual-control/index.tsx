@@ -17,22 +17,6 @@ const ManualControlPage = () => {
                 Khởi động bơm
               </button>
             </div>
-
-            <div>
-              <h3 className='mb-4 text-lg text-gray-500'>Lưu lượng</h3>
-              <input
-                type='range'
-                min='0'
-                max='100'
-                value={flowRate}
-                onChange={(e) => setFlowRate(Number(e.target.value))}
-                className='h-3 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600'
-                style={{
-                  background: `linear-gradient(to right, #2563eb 0%, #2563eb ${flowRate}%, #e5e7eb ${flowRate}%, #e5e7eb 100%)`
-                }}
-              />
-              <div className='mt-2 text-sm text-gray-600'>Giá trị: {flowRate}%</div>
-            </div>
           </div>
 
           <div>

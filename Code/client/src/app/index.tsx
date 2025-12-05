@@ -3,14 +3,16 @@ import './styles/index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { StrictMode } from 'react'
 import { router } from './router'
-import { GlobalProvider } from '@/shared/context/GlobalContext'
+import { LoadingProvider } from '@/shared/context/LoadingContext'
+import GlobalLoading from '@/shared/components/loading'
 
 const appRouter = createBrowserRouter(router)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <GlobalProvider>
+    <LoadingProvider>
+      <GlobalLoading />
       <RouterProvider router={appRouter} />
-    </GlobalProvider>
+    </LoadingProvider>
   </StrictMode>
 )

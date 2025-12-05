@@ -37,6 +37,20 @@ class _ClientService {
     return response
   }
 
+  async uploadFile(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await http.post<ApiResponse<any>>('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    return response
+  }
+
   // async exportCSVSensor() {
   //   const response = await http.get<ApiResponse<GetLogsResponse[]>>('/users/get-logs')
   //   return response

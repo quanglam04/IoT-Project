@@ -1,7 +1,10 @@
-const useLoadingHook = () => {
-  const start = () => {}
-  const finish = () => {}
+import { useContext } from 'react'
+import { LoadingContext } from '../context/LoadingContext'
 
-  return { start, finish }
+const useLoadingHook = () => {
+  const ctx = useContext(LoadingContext)
+  if (!ctx) throw new Error('useLoadingHook must be used inside <LoadingProvider>')
+  return ctx
 }
+
 export default useLoadingHook
