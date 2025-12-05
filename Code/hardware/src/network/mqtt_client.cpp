@@ -7,6 +7,7 @@
 #include "../config.h"
 #include "../network/ntp_time.h"
 #include "../control/pump_control.h"
+#include "../control/schedule.h"
 
 // WiFiClientSecure cho kết nối TLS (HiveMQ Cloud)
 static WiFiClientSecure espClient;
@@ -81,7 +82,7 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
 
     // =========================================================================
     // FOTA Update
-    // topic: device/update
+    // topic: update/firmware
     // JSON mẫu: { "url": "https://server.com/firmware.bin" }
     // =========================================================================
     if (String(topic) == TOPIC_DEVICE_UPDATE) {
@@ -97,6 +98,13 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
 
         // Gọi FOTA từ file fota_update.cpp
         fota_update(otaUrl);
+        return;
+    }
+
+    // nhận schedule JSON
+    if (String(topic) == TOPIC_DEVICE_SCHEDULE) {
+        Serial.println("📥 Received irrigation schedule via MQTT");
+        irrigation_load_from_json(msg); // msg is the String payload you already built
         return;
     }
 }
@@ -116,7 +124,7 @@ void mqtt_connect() {
             MQTT_PASS,
             LWT_TOPIC,
             1,          // QoS
-            true,       // Retain
+            false,       // Retain
             "{\"status\":\"offline\"}"
         );
 
@@ -126,6 +134,7 @@ void mqtt_connect() {
             mqttClient.subscribe(TOPIC_DEVICE_CONTROL);
             mqttClient.subscribe(TOPIC_DEVICE_FORCE);
             mqttClient.subscribe(TOPIC_DEVICE_UPDATE);
+            mqttClient.subscribe(TOPIC_DEVICE_SCHEDULE);
 
             mqtt_publish(TOPIC_DEVICE_STATUS, "{\"status\":\"online\"}");
         } else {

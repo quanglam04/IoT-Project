@@ -21,6 +21,7 @@
 #define TOPIC_DASHBOARD_SENSOR  "dashboard/update/sensor"       // Gửi dữ liệu cập nhật realtime lên dashboard => Publish
 #define TOPIC_DEVICE_STATUS     "device/status/" DEVICE_ID      // Gửi trạng thái hoạt động/kết nối của thiết bị => Publish
 #define TOPIC_DEVICE_LOG        "device/log/" DEVICE_ID         // Gửi log/cảnh báo về server => Publish
+#define TOPIC_DEVICE_SCHEDULE   "device/schedule"               // Topic nhận lịch tưới
 
 // Pins
 #define PIN_SOIL_ADC        36      // Analog input của cảm biến độ ẩm đất
@@ -42,6 +43,6 @@
 #define SOIL_RAW_WET   1000   // wet reading 
 
 // FOTA
-#define TOPIC_DEVICE_UPDATE "device/control/update"
+#define TOPIC_DEVICE_UPDATE "upload/firmware"
 
 #define FOTA_URL "https://0mxrrtbd-8080.asse.devtunnels.ms/uploads/firmware_v5.bin"
