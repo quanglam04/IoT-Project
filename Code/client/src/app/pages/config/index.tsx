@@ -16,7 +16,7 @@ const ConfigPage = () => {
 
         <div className='space-y-8'>
           {/* Grid 2 cột cho các input */}
-          <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+          <div className='gap-6'>
             <div>
               <label className='mb-3 block text-lg text-gray-500'>Ngưỡng độ ẩm đất</label>
               <input
