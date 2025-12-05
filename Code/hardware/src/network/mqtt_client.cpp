@@ -175,4 +175,14 @@ void mqtt_publish(const char* topic, const String &payload) {
     Serial.printf("📤 MQTT %s → %s\n", topic, payload.c_str());
 }
 
+// MQTT Flush
+void mqtt_flush(unsigned long timeoutMs) {
+    unsigned long deadline = millis() + timeoutMs;
+    while (millis() < deadline) {
+        mqtt_loop();
+        delay(0);  // yield cho WiFi/MQTT xử lý tối đa
+    }
+}
+
+
 
