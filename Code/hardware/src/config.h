@@ -44,5 +44,6 @@
 
 // FOTA
 #define TOPIC_DEVICE_UPDATE "upload/firmware"
+#define TOPIC_UPDATE_STATUS "upload/status"
 
 #define FOTA_URL "https://0mxrrtbd-8080.asse.devtunnels.ms/uploads/firmware_v5.bin"
