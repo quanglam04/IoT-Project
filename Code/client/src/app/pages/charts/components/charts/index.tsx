@@ -12,11 +12,8 @@ import {
   ResponsiveContainer
 } from 'recharts'
 import { humidityData, pressureData, temperatureData } from '../../dummy'
-import { useGlobalContext } from '@/shared/context/GlobalContext'
 
 const Chart = () => {
-  const { a } = useGlobalContext()
-  console.log(`a: ${a}`)
   return (
     <div className='rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
       <h2 className='mb-6 text-2xl font-bold'>Biểu đồ</h2>
