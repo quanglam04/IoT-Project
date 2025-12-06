@@ -7,7 +7,7 @@ interface Menu {
 const listMenu: Menu[] = [
   { title: 'Dashboard', navigateTo: '/', requireAdmin: false },
   { title: 'Charts', navigateTo: '/chart-page', requireAdmin: false },
-  { title: 'AI Schedule', navigateTo: '/ai-schedule-page', requireAdmin: false },
+  // { title: 'AI Schedule', navigateTo: '/ai-schedule-page', requireAdmin: false },
   { title: 'Logs', navigateTo: '/log-page', requireAdmin: true },
   { title: 'Reports', navigateTo: '/report-page', requireAdmin: true },
   { title: 'Update Firmware', navigateTo: '/update-firmware', requireAdmin: true },

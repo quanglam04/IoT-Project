@@ -6,7 +6,7 @@ const UserPage = () => {
   return (
     <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
-        <h2 className='mb-8 text-3xl font-bold'>Thông tin người dùng</h2>
+        <h2 className='mb-8 text-2xl font-bold'>Thông tin người dùng</h2>
 
         <div className='overflow-x-auto'>
           <table className='w-full'>

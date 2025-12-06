@@ -7,7 +7,7 @@ const NotificationPage = () => {
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
         {/* Header with Mark as read button */}
         <div className='mb-8 flex items-center justify-between'>
-          <h2 className='text-3xl font-bold'>Thông báo</h2>
+          <h2 className='text-2xl font-bold'>Thông báo</h2>
 
           <button
             onClick={handleMarkAllAsRead}

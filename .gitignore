@@ -1,2 +1,5 @@
 Documents/*.docx
 Documents/*.txt
+*.md
+!Code/ai/README.md
+data/
