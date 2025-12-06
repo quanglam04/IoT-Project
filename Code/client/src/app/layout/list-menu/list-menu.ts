@@ -7,7 +7,7 @@ interface Menu {
 const listMenu: Menu[] = [
   { title: 'Tổng quan', navigateTo: '/', requireAdmin: false },
   { title: 'Biểu đồ', navigateTo: '/chart-page', requireAdmin: false },
-  { title: 'Lịch thông minh', navigateTo: '/ai-schedule-page', requireAdmin: false },
+  { title: 'Lịch tưới tự động', navigateTo: '/ai-schedule-page', requireAdmin: false },
   { title: 'Nhật ký', navigateTo: '/log-page', requireAdmin: true },
   { title: 'Báo cáo', navigateTo: '/report-page', requireAdmin: true },
   { title: 'Cập nhật Firmware', navigateTo: '/update-firmware', requireAdmin: true },

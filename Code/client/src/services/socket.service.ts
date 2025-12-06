@@ -1,4 +1,5 @@
 import storageService from '@/shared/services/storage.service'
+import type { TodaySchedule } from '@/shared/types/auth.type'
 import type { AIPrediction, DataSensor } from '@/shared/types/sensor.type'
 import { io, type Socket } from 'socket.io-client'
 
@@ -39,13 +40,16 @@ class SocketService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onReceiveDataFromSensor(callback: (data: DataSensor) => void) {
     this.socket?.on('sensor/data/push', callback)
-    // bên server sẽ đẩy sang 60p 1 lần
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onReceiveSuggestionFromAI(callback: (data: AIPrediction) => void) {
     this.socket?.on('rain/forecast', callback)
-    // bên server sẽ đẩy sang 60p 1 lần
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onReceiveScheduleFromAI(callback: (data: TodaySchedule[]) => void) {
+    this.socket?.on('irrigation/schedule/update', callback)
   }
 }
 

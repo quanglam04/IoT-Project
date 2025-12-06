@@ -1,7 +1,8 @@
 import { data } from './data'
+import useAIScheduleWeeklyHook from './useAIScheduleWeeklyHook'
 
 const AISchedule = () => {
-  const dataSchedule = data
+  const { dataSchedule } = useAIScheduleWeeklyHook()
   return (
     <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
@@ -17,7 +18,7 @@ const AISchedule = () => {
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-200'>
-              {data.map((day, dayIndex) =>
+              {dataSchedule.map((day, dayIndex) =>
                 day.slots.map((slot, slotIndex) => (
                   <tr key={`${dayIndex}-${slotIndex}`} className='transition-colors hover:bg-blue-50'>
                     {slotIndex === 0 && (
