@@ -27,7 +27,7 @@ const handleSensorData = async (payload: string) => {
       pressureHpa: roundToTwo(data.pressure_hpa),
       soilMoisture: roundToTwo(data.soilMoisture),
       timestamp: formatDate(data.timestamp),
-      timestamps: data.timestamp
+      timestamps: new Date(data.timestamp),
     };
 
     // biến model để lưu vào db
