@@ -1,6 +1,7 @@
 import http from '@/shared/services/http.service'
 import type { ApiResponse } from '@/shared/types/http.type'
 import type {
+  DataSensorResponse,
   GetCountDeviceResposne,
   GetLogsResponse,
   LoginRequest,
@@ -51,10 +52,10 @@ class _ClientService {
     return response
   }
 
-  // async exportCSVSensor() {
-  //   const response = await http.get<ApiResponse<GetLogsResponse[]>>('/users/get-logs')
-  //   return response
-  // }
+  async getDataSensor() {
+    const response = await http.get<ApiResponse<DataSensorResponse>>('/sensors/get-data')
+    return response
+  }
 }
 const clientService = new _ClientService()
 

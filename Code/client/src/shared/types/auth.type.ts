@@ -1,3 +1,5 @@
+import type { DataType } from '@/app/pages/charts/components/charts/useChartHook'
+
 interface LoginRequest {
   username: string
   password: string
@@ -34,9 +36,15 @@ interface GetLogsResponse {
   details: string
 }
 
+interface DataSensorResponse {
+  temperatureArr: DataType[]
+  pressureArr: DataType[]
+  soilMoistureArr: DataType[]
+}
+
 export enum ROLE {
   Admin = 'ADMIN',
   User = 'USER'
 }
 
-export type { LoginRequest, LoginResponse, User, GetCountDeviceResposne, GetLogsResponse }
+export type { LoginRequest, LoginResponse, User, GetCountDeviceResposne, GetLogsResponse, DataSensorResponse }

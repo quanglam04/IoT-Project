@@ -2,7 +2,6 @@ import useLogHook from './useLogHook'
 
 const LogPage = () => {
   const { logs } = useLogHook()
-  console.log(`LogPage: ${logs}`)
   return (
     <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>

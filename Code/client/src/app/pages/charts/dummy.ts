@@ -1,10 +1,12 @@
+import type { DataType } from './components/charts/useChartHook'
+
 const timeRanges = [
   { value: '3h', label: '3h' },
   { value: '24h', label: '24h' },
   { value: '3d', label: '3d' },
   { value: '7d', label: '7d' }
 ]
-const temperatureData = [
+const temperatureData: DataType[] = [
   { time: '00:00', value: 22 },
   { time: '04:00', value: 20 },
   { time: '08:00', value: 24 },
@@ -14,7 +16,7 @@ const temperatureData = [
   { time: '24:00', value: 23 }
 ]
 
-const humidityData = [
+const humidityData: DataType[] = [
   { time: '00:00', value: 65 },
   { time: '04:00', value: 70 },
   { time: '08:00', value: 68 },
@@ -24,7 +26,7 @@ const humidityData = [
   { time: '24:00', value: 62 }
 ]
 
-const pressureData = [
+const pressureData: DataType[] = [
   { time: '00:00', value: 1013 },
   { time: '04:00', value: 1015 },
   { time: '08:00', value: 1014 },

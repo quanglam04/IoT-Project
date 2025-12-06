@@ -11,7 +11,6 @@ const useLogHook = () => {
       if (response.status == HTTP_STATUS.OK) {
         const listLogs = response.data.data
         setLogs(listLogs)
-        console.log(listLogs)
       }
     } catch (e) {
       console.log(e)
