@@ -1,0 +1,17 @@
+{
+  "feature_names": [
+    "api_pop",
+    "api_rain_1h",
+    "pressure_slope_1h",
+    "temp_drop_15m",
+    "rh_rise_15m",
+    "dew_point_diff",
+    "temp_bias",
+    "soil_moist_smooth",
+    "month_sin",
+    "month_cos",
+    "hour_sin",
+    "hour_cos",
+    "uvi_index"
+  ]
+}

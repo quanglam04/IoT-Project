@@ -29,15 +29,15 @@ OUTPUT_FILE = DATA_DIR / "sensor_live.csv"
 DATA_DIR.mkdir(exist_ok=True)
 
 # ===================== CẤU TRÚC DỮ LIỆU =====================
-# Data từ ESP32 sensor (chỉ có 4 giá trị)
+# Data từ ESP32 sensor (theo báo cáo: 4 giá trị)
+# Bỏ light, chỉ giữ: temp, rh, pressure, soil_moisture
 FIELDNAMES = [
     'ts',                # timestamp
     'device_id',         # device ID
     'temp_c',           # nhiệt độ
     'rh_pct',           # độ ẩm không khí
+    'pressure_hpa',     # áp suất không khí (BME280)
     'soil_moist_pct',   # độ ẩm đất
-    'presssure_hpa',            # áp suất không khí
-    
 ]
 
 # Counter
@@ -90,14 +90,14 @@ def on_message(client, userdata, msg):
         # Timestamp hiện tại nếu không có trong payload
         timestamp = data.get('timestamp', datetime.now().isoformat())
         
-        # Map data từ ESP32 format sang CSV format
+        # Map data từ ESP32 format sang CSV format (theo báo cáo: 4 fields)
         row = {
             'ts': timestamp,
             'device_id': data.get('device_id', 'esp32-01'),
             'temp_c': data.get('temperature', 0),
             'rh_pct': data.get('humidity', 0),
+            'pressure_hpa': data.get('pressure', 0),  # BME280 pressure
             'soil_moist_pct': data.get('soilMoisture', 0),
-            'light': data.get('light', 0)
         }
         
         # Validate: Kiểm tra có đủ data không
@@ -117,8 +117,8 @@ def on_message(client, userdata, msg):
         print(f"[{message_count:04d}] {now} | "
               f"Temp: {row['temp_c']:6.2f}°C | "
               f"Humidity: {row['rh_pct']:6.2f}% | "
-              f"Soil: {row['soil_moist_pct']:5.1f}% | "
-              f"Light: {row['light']:5.0f}")
+              f"Pressure: {row['pressure_hpa']:7.2f}hPa | "
+              f"Soil: {row['soil_moist_pct']:5.1f}%")
         
         # Thông báo mỗi 10 messages
         if message_count % 10 == 0:
