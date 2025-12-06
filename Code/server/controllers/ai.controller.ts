@@ -131,11 +131,7 @@ export const handleIrrigationSchedule = async (payload: string) => {
 
     // Emit về Frontend
     if (io) {
-      const emitData = {
-        data: groupedDataForFE
-      };
-
-      io.emit(Event.IRRIGATION_SCHEDULE_UPDATE, emitData);
+      io.emit(Event.IRRIGATION_SCHEDULE_UPDATE, groupedDataForFE);
       logger.info(`Đã emit ${groupedDataForFE.length} ngày lịch tưới mới tới client`);
     }
 
