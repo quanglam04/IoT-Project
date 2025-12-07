@@ -1,55 +1,109 @@
-// Kết nối đến máy chủ ntp để lấy thời gian thực
-// Cập nhật đồng hồ hệ thống trong module ESP
+// ntp_time.cpp
+// Quản lý thời gian NTP, giờ địa phương (GMT+7) và parse ISO8601 chuẩn
 
 #include <Arduino.h>
-#include <time.h>           // Thư viện cho các hàm thao tác thời gian
-#include "config.h"         // File cấu hình
+#include <time.h>
+#include "config.h"
 
-// Thiết lập múi giờ offset = 7 * 3600 giây = UTC +7 (giờ Việt Nam/Bangkok)
-/*
-Thiết lập máy chủ NTP:
-+ "pool.ntp.org" (nguồn NTP chung)
-+ "time.google.com" (máy chủ thời gian của Google)
-*/ 
-void ntp_init(){
-    configTime(7*3600, 0, "pool.ntp.org","time.google.com");        
-    Serial.print("Syncing time");
+// ====================================================
+// ===============  NTP INIT (GMT+7)  =================
+// ====================================================
+void ntp_init() {
+    // GMT+7 = 7 * 3600 giây
+    configTime(7 * 3600, 0, "pool.ntp.org", "time.google.com");
+
+    Serial.print("⏳ Syncing time");
     int tries = 0;
-    while (time(nullptr) < 1600000000 && tries < 20){       // Trả về epoch time với mốc tương ứng với năm 2020. Nếu thời gian hiện tại nhỏ hơn mốc đó => chưa được đồng bộ NTP
-    Serial.print(".");
-    delay(500);
-    tries++;
+    while (time(nullptr) < 1600000000 && tries < 20) {
+        Serial.print(".");
+        delay(500);
+        tries++;
     }
     Serial.println();
-    }
 
-// Trả về thời gian hiện tại dạng epoch, đơn vị là giây
-// Dùng để ghi log, hoặc gửi dữ liệu timestamp cho server
-time_t get_epoch(){
-    return time(nullptr);
+    if (time(nullptr) > 1600000000)
+        Serial.println("✅ Time synced OK (GMT+7)");
+    else
+        Serial.println("❌ NTP sync failed!");
 }
 
-String iso_now(){
-    time_t t = get_epoch();         // Lấy thời gian hiện tại
+// ====================================================
+// ============  GET EPOCH (GIỜ LOCAL)  ===============
+// ====================================================
+time_t get_epoch() {
+    return time(nullptr);  // Đã là giờ GMT+7
+}
+
+// ====================================================
+// ============  ISO NOW (GIỜ LOCAL)   ================
+// ====================================================
+String iso_now() {
+    time_t t = get_epoch();
     struct tm tm;
-    gmtime_r(&t, &tm);              // Chuyển từ epoch sang cấu trúc tm ở múi giờ UTC
+    localtime_r(&t, &tm);   // <- GIỜ HÀ NỘI
+
     char buf[32];
-    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm);      // Định dạng thời gian thành chuỗi ISO 8601 
+    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S+07:00", &tm);
     return String(buf);
 }
 
-// parse ISO8601 basic without timezone suffix: "2025-12-10T07:00:00" or "2025-12-10T07:00:00Z"
-// Assumes local time (configTime was called earlier). Returns time_t (seconds since epoch).
-time_t parseISO8601(const char* iso8601) {
-    if (iso8601 == nullptr) return 0;
-    int year=0, mon=0, day=0, hour=0, min=0, sec=0;
-    // support both with and without trailing 'Z'
-    // formats: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD HH:MM:SS
-    if (sscanf(iso8601, "%4d-%2d-%2dT%2d:%2d:%2d", &year, &mon, &day, &hour, &min, &sec) < 6) {
-        if (sscanf(iso8601, "%4d-%2d-%2d %2d:%2d:%2d", &year, &mon, &day, &hour, &min, &sec) < 6) {
-            return 0;
+// ====================================================
+// =======  Convert epoch → Local ISO (debug)  =========
+// ====================================================
+String iso_from_epoch(time_t t) {
+    struct tm tm;
+    localtime_r(&t, &tm);
+    char buf[32];
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &tm);
+    return String(buf);
+}
+
+// ====================================================
+// ===== PARSE ISO8601 (HỖ TRỢ Z + OFFSET + LOCAL) ====
+// ====================================================
+//
+// Các dạng hỗ trợ:
+// - "2025-12-15T07:00:00"
+// - "2025-12-15 07:00:00"
+// - "2025-12-15T00:00:00Z"
+// - "2025-12-15T07:00:00+07:00"
+// - "2025-12-15T08:00:00+08:00"
+// ====================================================
+time_t parseISO8601(const char* s) {
+    if (s == nullptr) return 0;
+
+    int year, mon, day, hour, min, sec;
+    year = mon = day = hour = min = sec = 0;
+
+    // Parse dạng cơ bản trước
+    int parsed = sscanf(s, "%4d-%2d-%2dT%2d:%2d:%2d",
+                        &year, &mon, &day, &hour, &min, &sec);
+
+    if (parsed < 6) {
+        parsed = sscanf(s, "%4d-%2d-%2d %2d:%2d:%2d",
+                        &year, &mon, &day, &hour, &min, &sec);
+        if (parsed < 6) return 0;
+    }
+
+    // Kiểm tra suffix timezone
+    int offsetSign = 0;
+    int offsetHour = 0, offsetMin = 0;
+
+    const char* p = strchr(s, 'T');
+    if (!p) p = strchr(s, ' ');
+
+    if (p) {
+        p += 9; // nhảy qua HH:MM:SS
+
+        if (*p == 'Z') {
+            offsetSign = 0; // UTC
+        } else if (*p == '+' || *p == '-') {
+            offsetSign = (*p == '+') ? 1 : -1;
+            sscanf(p + 1, "%2d:%2d", &offsetHour, &offsetMin);
         }
     }
+
+    // Tạo struct tm theo giờ LOCAL
     struct tm tm;
     memset(&tm, 0, sizeof(tm));
     tm.tm_year = year - 1900;
@@ -59,7 +113,17 @@ time_t parseISO8601(const char* iso8601) {
     tm.tm_min  = min;
     tm.tm_sec  = sec;
     tm.tm_isdst = -1;
-    // mktime treats tm as local time; configTime should already set TZ
-    time_t t = mktime(&tm);
-    return t;
+
+    time_t local_epoch = mktime(&tm); // xem như local time (GMT+7)
+
+    // Nếu có timezone offset trong string → convert đúng
+    if (offsetSign != 0) {
+        int totalOffset = offsetSign * (offsetHour * 3600 + offsetMin * 60);
+
+        // Convert từ TIMEZONE về LOCAL GMT+7
+        local_epoch -= totalOffset;   // đưa về UTC
+        local_epoch += 7 * 3600;      // đưa sang GMT+7
+    }
+
+    return local_epoch;
 }

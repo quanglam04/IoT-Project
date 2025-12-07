@@ -1,8 +1,8 @@
 #pragma once
 
 // Cấu hình WiFi
-#define WIFI_SSID       "Hung Ly"      // SSID WiFi 
-#define WIFI_PASSWORD   "888888888"  // Mật khẩu
+#define WIFI_SSID       "Bo"      // SSID WiFi 
+#define WIFI_PASSWORD   "hwgc5970"  // Mật khẩu
 
 // MQTT Broker
 #define MQTT_BROKER     "c35f82397d674292948a051226f10fa6.s1.eu.hivemq.cloud"     // Địa chỉ public broker
@@ -21,7 +21,7 @@
 #define TOPIC_DASHBOARD_SENSOR  "dashboard/update/sensor"       // Gửi dữ liệu cập nhật realtime lên dashboard => Publish
 #define TOPIC_DEVICE_STATUS     "device/status/" DEVICE_ID      // Gửi trạng thái hoạt động/kết nối của thiết bị => Publish
 #define TOPIC_DEVICE_LOG        "device/log/" DEVICE_ID         // Gửi log/cảnh báo về server => Publish
-#define TOPIC_DEVICE_SCHEDULE   "device/schedule"               // Topic nhận lịch tưới
+#define TOPIC_DEVICE_SCHEDULE   "schedule/weekly"               // Topic nhận lịch tưới
 
 // Pins
 #define PIN_SOIL_ADC        36      // Analog input của cảm biến độ ẩm đất

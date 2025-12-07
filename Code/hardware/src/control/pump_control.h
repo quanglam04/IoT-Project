@@ -12,5 +12,5 @@ void pump_off();              // Tắt bơm
 bool pump_is_on();            // Kiểm tra trạng thái bơm
 void pump_toggle();           // Đảo trạng thái bơm
 void pump_publish_status();   // Gửi trạng thái bơm lên MQTT
-void pump_update();             // Auto stop
+void pump_update();           // Auto stop
 void pump_on_with_duration(int duration_min);   // Bật bơm theo duration min

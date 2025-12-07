@@ -19,3 +19,4 @@ void irrigation_load_from_json(const String &jsonPayload);
 void irrigation_loop(); // call from main loop periodically (e.g. every 1s)
 void irrigation_clear(); // clear loaded slots
 bool schedule_is_watering_time();
+void irrigation_print_slots();

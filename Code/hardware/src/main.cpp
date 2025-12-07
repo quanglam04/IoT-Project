@@ -67,6 +67,6 @@ void loop() {
 
     // Lịch tưới
     irrigation_loop();           
-
+    pump_update();
     delay(1000);
 }
