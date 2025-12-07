@@ -23,6 +23,10 @@ const ScheduleSchema= new Schema(
             type: String,
             required: true
         },
+        decision: {
+            type: Boolean,
+            default: true,
+        }
     }
 )
 

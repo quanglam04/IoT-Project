@@ -42,7 +42,9 @@ MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
 
 TOPIC_SCHEDULE = "ai/schedule/irrigation"
 
-
+import zoneinfo
+VN_TZ = zoneinfo.ZoneInfo("Asia/Ho_Chi_Minh")
+UTC_TZ = zoneinfo.ZoneInfo("UTC")
 def get_demo_datetime() -> datetime:
     """Nhận input ngày giờ từ user."""
     print("=" * 70)

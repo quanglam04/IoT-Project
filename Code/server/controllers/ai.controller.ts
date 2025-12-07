@@ -9,10 +9,15 @@ import Event from '../shared/constants/event';
 import HTTPStatus from '../shared/constants/httpStatus';
 import { AuthRequest } from '../shared/types/util.type';
 import { Response } from 'express';
+import mqttClient from '../config/mqtt.config';
+import Topic from '../shared/constants/topic';
+import moment from 'moment-timezone';
+import DecisionAI from '../models/DecisionAI';
 
 // Định nghĩa thư mục lưu file JSON
 // Thư mục này sẽ nằm tại: Code/server/ai_data
 const AI_DATA_FOLDER = path.join(__dirname, '../ai_data');
+const VN_TZ = 'Asia/Ho_Chi_Minh';
 
 // Đảm bảo thư mục tồn tại, nếu chưa có thì tạo mới
 const ensureFolderExists = () => {
@@ -44,8 +49,9 @@ export const handleRainForecast = async (payload: string) => {
     const forecastRecord = {
       date: new Date(data.timestamp),
       chanceOfRain: data.predictions.rain_60min.probability ?? null,
-      recommendation: data.recommendation.reason ?? null,
+      reason: data.recommendation.reason ?? null,
       shouldIrrigate: data.recommendation.should_irrigate ?? null,
+      slot_time: data.slot_id ?? null,
     };
 
     const savedForecast = await Forecast.create(forecastRecord);
@@ -65,57 +71,79 @@ export const handleRainForecast = async (payload: string) => {
  * Xử lý lịch tưới từ AI
  * Topic: ai/schedule/irrigation
  */
+
 export const handleIrrigationSchedule = async (payload: string) => {
   try {
     logger.info('Nhận được lịch tưới từ AI');
-
     const data = JSON.parse(payload);
 
-    // xuất ra file json
+    // Ghi file
     ensureFolderExists();
     const filePath = path.join(AI_DATA_FOLDER, 'irrigation_schedule.json');
-    
-    // Ghi file (ghi đè nội dung cũ bằng nội dung mới nhất)
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), { encoding: 'utf-8' });
-    logger.info(`Đã xuất dữ liệu ra file: ${filePath}`);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 
     if (!data.slots || !Array.isArray(data.slots)) {
-      logger.warn('Payload không có mảng slots hợp lệ, bỏ qua xử lý');
+      logger.warn('Payload không có mảng slots hợp lệ');
       return;
     }
 
     const schedulesToSave: any[] = [];
+    const decisionToSave: any[] = [];
     const groupedByDate = new Map<string, any[]>();
+    const groupedByDateSensor = new Map<string, any[]>();
 
     data.slots.forEach((slot: any) => {
-      const start = new Date(slot.start_ts);
-      const end = new Date(slot.end_ts);
+      // Ép đúng giờ Việt Nam dù chuỗi không có Z
+      const start = moment.tz(slot.start_ts, 'YYYY-MM-DDTHH:mm:ss', VN_TZ);
+      const end = moment.tz(slot.end_ts, 'YYYY-MM-DDTHH:mm:ss', VN_TZ);
 
-      const dateKey = slot.date || slot.start_ts.split('T')[0];
-      const timeStart = start.toLocaleString('vi-VN').split(' ')[0].substring(0, 5);
-      const timeEnd = end.toLocaleString('vi-VN').split(' ')[0].substring(0, 5);
+      if (!start.isValid() || !end.isValid()) {
+        logger.warn(`Thời gian không hợp lệ: ${slot.start_ts} - ${slot.end_ts}`);
+        return;
+      }
 
-      // Dữ liệu để lưu vào DB
+      const dateKey = start.format('YYYY-MM-DD');
+      const timeStart = start.format('HH:mm');
+      const timeEnd = end.format('HH:mm');
+
+      if(slot.decision){
+          decisionToSave.push({
+            date: new Date(slot.forecast_trigger_ts),
+            decision: (slot.decision === 'confirm' ? true : false),
+            reason: slot.decision_reason
+        });
+      }
+
+      // 1. Lưu DB
       schedulesToSave.push({
-        start,
-        end,
+        start: start.toDate(),
+        end: end.toDate(),
         durationMin: slot.duration_min,
         date: dateKey,
-        note: `Tưới ${slot.duration_min} phút [${timeStart} tới ${timeEnd}]`,
+        decision: (slot.decision === 'confirm' ? true : false),
+        note: `Tưới ${slot.duration_min} phút [${timeStart} - ${timeEnd}]`,
       });
 
-      // Gom nhóm theo ngày để gửi FE
-      if (!groupedByDate.has(dateKey)) {
-        groupedByDate.set(dateKey, []);
-      }
+      // 2. Gửi Frontend
+      if (!groupedByDate.has(dateKey)) groupedByDate.set(dateKey, []);
       groupedByDate.get(dateKey)!.push({
-        start: timeStart,        // "07:00"
-        end: timeEnd,            // "07:20"
+        start: timeStart,
+        end: timeEnd,
         durationMin: slot.duration_min,
+        decision: slot.decision ? slot.decision == 'confirm'?true:false : true
+      });
+
+      // 3. Gửi phần cứng: giữ nguyên định dạng "2025-12-07T23:00:00" (local time, không Z)
+      if (!groupedByDateSensor.has(dateKey)) groupedByDateSensor.set(dateKey, []);
+      groupedByDateSensor.get(dateKey)!.push({
+        start_ts: start.format('YYYY-MM-DDTHH:mm:ss'),  // đúng như AI gửi
+        end_ts:   end.format('YYYY-MM-DDTHH:mm:ss'),    // không có Z
+        duration_min: slot.duration_min,
+        decision: slot.decision ? slot.decision == 'confirm'?true:false : true
       });
     });
 
-    // Chuyển Map → Array để dễ xử lý ở FE
+    // Frontend
     const groupedDataForFE = Array.from(groupedByDate.entries())
       .map(([date, slots]) => ({
         date,
@@ -123,21 +151,42 @@ export const handleIrrigationSchedule = async (payload: string) => {
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
-    // Lưu vào DB
+    // Phần cứng: đúng định dạng AI yêu cầu
+    const groupedDataForHardWare = Array.from(groupedByDateSensor.entries())
+      .map(([date, slots]) => ({
+        date,
+        slots: slots.sort((a, b) => a.start_ts.localeCompare(b.start_ts)) // sort theo chuỗi thời gian
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Lưu DB
     if (schedulesToSave.length > 0) {
       await Schedule.insertMany(schedulesToSave);
-      logger.info(`Đã lưu thêm ${schedulesToSave.length} lịch tưới mới vào DB`);
+      logger.info(`Đã lưu ${schedulesToSave.length} lịch tưới mới`);
     }
 
-    // Emit về Frontend
+    if (decisionToSave.length > 0) {
+      await DecisionAI.insertMany(decisionToSave);
+      logger.info(`Đã lưu ${decisionToSave.length} quyết định mới`);
+    }
+
+    // Gửi Frontend
     if (io) {
       io.emit(Event.IRRIGATION_SCHEDULE_UPDATE, groupedDataForFE);
-      logger.info(`Đã emit ${groupedDataForFE.length} ngày lịch tưới mới tới client`);
     }
 
-  } catch (error) {
-    logger.error(`Lỗi xử lý lịch tưới AI: ${error}`);
-    // Không cần rollback vì không dùng transaction
+    // Gửi phần cứng qua MQTT
+    mqttClient.publish(Topic.SCHEDULE_WEEKLY, JSON.stringify(groupedDataForHardWare), (err) => {
+      if (err) {
+        logger.error(`MQTT publish lỗi: ${err}`);
+      } else {
+        logger.info(`Đã gửi lịch tưới cho thiết bị qua topic: ${Topic.SCHEDULE_WEEKLY}`);
+        logger.info(JSON.stringify(groupedDataForHardWare, null, 2));
+      }
+    });
+
+  } catch (error: any) {
+    logger.error(`Lỗi xử lý lịch tưới AI: ${error.message || error}`);
   }
 };
 
@@ -185,3 +234,42 @@ export const getScheduleToday = async (req: AuthRequest, res: Response) => {
     })
   }
 };
+
+export const getAiDecision = async (req: AuthRequest, res: Response) => {
+  logger.info(`Lấy 5 quyết định của AI`)
+  try {
+    const forecasts = await DecisionAI.find() //Decision AI
+      .sort({ date: -1 })
+      .limit(10)
+      .lean(); 
+    
+    if (!forecasts || forecasts.length === 0) {
+      return res.status(HTTPStatus.OK).json({
+        status: HTTPStatus.OK,
+        message: 'Không có quyết định nào của AI gần đây',
+        data: []
+      });
+    }
+
+    const formattedDecisions = forecasts.map((item) => {
+      return {
+        date:  moment.utc(item.date).format('DD/MM/YYYY HH:mm'),
+        reason: item.reason ?? null,
+        decision: item.decision
+      };
+    });
+
+    return res.status(HTTPStatus.OK).json({
+      status: HTTPStatus.OK,
+      message: 'Lấy thành công 5 quyết định mới nhất',
+      data: formattedDecisions
+    })
+
+  } catch (error: any) {
+    logger.error(`Lỗi khi lấy quyết định AI: ${error}`);
+    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+      status: HTTPStatus.INTERNAL_SERVER_ERROR,
+      message: 'Không thể lấy dữ liệu quyết định AI',
+    });
+  }
+}
