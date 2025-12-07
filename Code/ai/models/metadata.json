@@ -1,24 +1,43 @@
 {
   "features": [
-    "temp_c",
-    "rh_pct",
-    "pressure_hpa",
-    "soil_moist_pct",
-    "rain_mm_5min",
-    "pressure_delta15",
-    "rh_delta15",
-    "temp_delta15",
-    "temp_c_lag15",
-    "rh_pct_lag15",
-    "pressure_hpa_lag15",
-    "soil_moist_pct_lag15",
-    "temp_c_mean30",
-    "rh_pct_mean30",
-    "pressure_hpa_mean30",
-    "soil_moist_pct_mean30",
-    "rain_in_last_15m",
-    "hour_of_day",
-    "day_of_week"
+    "api_pop",
+    "api_rain_1h",
+    "pressure_slope_1h",
+    "temp_drop_15m",
+    "rh_rise_15m",
+    "dew_point_diff",
+    "temp_bias",
+    "soil_moist_smooth",
+    "month_sin",
+    "month_cos",
+    "hour_sin",
+    "hour_cos",
+    "uvi_index"
   ],
-  "threshold_default": 0.725
+  "threshold_default": 0.675,
+  "hyperparameters": {
+    "objective": "binary:logistic",
+    "eval_metric": "auc",
+    "eta": 0.05,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "lambda": 1.5,
+    "alpha": 0.5,
+    "scale_pos_weight": 8.5
+  },
+  "metrics": {
+    "auc_roc": 0.9585104229912973,
+    "pr_auc": 0.8279942232913285,
+    "precision": 0.6831683168316832,
+    "recall": 0.8518518518518519,
+    "f1": 0.7582417582417582,
+    "best_threshold": 0.675
+  },
+  "data_info": {
+    "n_samples": 3383,
+    "n_train": 2875,
+    "n_val": 508,
+    "positive_rate": 0.15962163759976353
+  }
 }

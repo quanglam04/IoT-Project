@@ -5,14 +5,13 @@ interface Menu {
 }
 
 const listMenu: Menu[] = [
-  { title: 'Dashboard', navigateTo: '/', requireAdmin: false },
-  { title: 'Charts', navigateTo: '/chart-page', requireAdmin: false },
-  { title: 'AI Schedule', navigateTo: '/ai-schedule-page', requireAdmin: false },
-  { title: 'Logs', navigateTo: '/log-page', requireAdmin: true },
-  { title: 'Reports', navigateTo: '/report-page', requireAdmin: true },
-  { title: 'Config', navigateTo: '/config-page', requireAdmin: true },
-  { title: 'Update Firmware', navigateTo: '/update-firmware', requireAdmin: true },
-  { title: 'Users', navigateTo: '/user-page', requireAdmin: true },
-  { title: 'Notification', navigateTo: '/notification-page', requireAdmin: false }
+  { title: 'Tổng quan', navigateTo: '/', requireAdmin: false },
+  { title: 'Biểu đồ', navigateTo: '/chart-page', requireAdmin: false },
+  { title: 'Lịch tưới tự động', navigateTo: '/ai-schedule-page', requireAdmin: false },
+  { title: 'Nhật ký', navigateTo: '/log-page', requireAdmin: true },
+  { title: 'Báo cáo', navigateTo: '/report-page', requireAdmin: true },
+  { title: 'Cập nhật Firmware', navigateTo: '/update-firmware', requireAdmin: true },
+  { title: 'Người dùng', navigateTo: '/user-page', requireAdmin: true },
+  { title: 'Thông báo', navigateTo: '/notification-page', requireAdmin: false }
 ]
 export { listMenu }

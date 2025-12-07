@@ -1,3 +1,4 @@
+import { timeStamp } from 'console'
 import mongoose from 'mongoose'
 import { Schema } from 'mongoose'
 
@@ -20,6 +21,10 @@ const SensorDataSchema = new Schema(
             required: true
         },
         timestamp: {
+            type: String,
+            required: true
+        },
+        timestamps:{
             type: Date,
             default: Date.now,
             required: true

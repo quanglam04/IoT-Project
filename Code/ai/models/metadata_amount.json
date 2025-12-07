@@ -1,25 +1,41 @@
 {
   "features": [
-    "temp_c",
-    "rh_pct",
-    "pressure_hpa",
-    "soil_moist_pct",
-    "rain_mm_5min",
-    "pressure_delta15",
-    "rh_delta15",
-    "temp_delta15",
-    "temp_c_lag15",
-    "rh_pct_lag15",
-    "pressure_hpa_lag15",
-    "soil_moist_pct_lag15",
-    "temp_c_mean30",
-    "rh_pct_mean30",
-    "pressure_hpa_mean30",
-    "soil_moist_pct_mean30",
-    "rain_in_last_15m",
-    "hour_of_day",
-    "day_of_week"
+    "api_pop",
+    "api_rain_1h",
+    "pressure_slope_1h",
+    "temp_drop_15m",
+    "rh_rise_15m",
+    "dew_point_diff",
+    "temp_bias",
+    "soil_moist_smooth",
+    "month_sin",
+    "month_cos",
+    "hour_sin",
+    "hour_cos",
+    "uvi_index"
   ],
   "target": "rain_amount_next_60_mm",
-  "note": "XGBoost regression for rainfall amount in next 60 minutes"
+  "note": "XGBoost regression for rainfall amount in next 60 minutes",
+  "hyperparameters": {
+    "objective": "reg:squarederror",
+    "eval_metric": "rmse",
+    "eta": 0.05,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "lambda": 1.5,
+    "alpha": 0.5
+  },
+  "metrics": {
+    "mae": 0.15461954474449158,
+    "rmse": 0.452486756141494,
+    "r2": 0.7694118618965149
+  },
+  "data_info": {
+    "n_samples": 3383,
+    "n_train": 2875,
+    "n_val": 508,
+    "target_mean": 0.18329884111881256,
+    "target_max": 18.600000381469727
+  }
 }

@@ -2,9 +2,10 @@ import clientService from '@/services/client.service'
 import mqttClientService from '@/services/mqtt.service'
 import useLoadingHook from '@/shared/hook/useLoadingHook'
 import useNotificationHook from '@/shared/hook/useNotificationHook'
+import storageService from '@/shared/services/storage.service'
 import { getDateFormat } from '@/shared/utils/date.util'
 import { message, type UploadFile, type UploadProps } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const useUpdateFirmwareHook = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
@@ -46,26 +47,36 @@ const useUpdateFirmwareHook = () => {
 
       const response = await clientService.uploadFile(file)
       if (response.status === 200) {
-        showSuccess('Upload file thành công!')
-        // Cập nhật ngày theo format HH:mm dd/mm/yyyy
-        const updatedAt = getDateFormat()
-        setLastUpdateDate(updatedAt)
         // lắng nghe thông tin từ hivemq, nếu thành công => ok
-        // mqttClientService.subscribe('', () => {
-        //   // có thể lấy thông tin version để hiển thị, đồng thời set lại ngày
-        //   setLastUpdateDate(new Date().toLocaleDateString)
-        //   showSuccess('Upload firmware thành công')
-        // })
+        console.log('upload thành công')
+        mqttClientService.subscribe('upload/status', (message: string) => {
+          console.log('lắng nghe')
+          // có thể lấy thông tin version để hiển thị, đồng thời set lại ngày
+          const { status } = JSON.parse(message)
+          console.log(`status: ${status}`)
+          if (status === 'done') {
+            console.log('status::::', status)
+            const updatedAt = getDateFormat()
+            setLastUpdateDate(updatedAt)
+            localStorage.setItem('updatedAt', updatedAt)
+            showSuccess('Upload firmware thành công')
+            finish()
+          }
+        })
         setFileList([])
       } else {
         showError('Upload file thất bại!')
       }
     } catch {
       showError('Lỗi server')
-    } finally {
-      finish()
     }
   }
+
+  useEffect(() => {
+    const updatedAt = storageService.get('updatedAt') || ''
+    if (updatedAt) setLastUpdateDate(updatedAt)
+  }, [])
+
   return { currentVersion, uploadProps, handleUpload, fileList, uploading: isLoading, lastUpdateDate }
 }
 export default useUpdateFirmwareHook

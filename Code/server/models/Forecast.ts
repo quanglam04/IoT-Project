@@ -6,23 +6,18 @@ const ForecastSchema = new Schema({
         type: Date,
         required: true
     },
-    predictedTemperature: {
-        type: Number
-    },
-    predictedHumidity: {
-        type: Number
-    },
     chanceOfRain: { 
         type: Number,
         min: 0,
-        max: 100
+        max: 1
     },
     recommendation: { 
         type: String
+    },
+    shouldIrrigate: {
+        type: Boolean
     }
 });
-// cái này chưa biết để nhiều dự báo hay bao nhiêu nên để mặc định 1 nhé
-ForecastSchema.index({ date: 1 }, { unique: true });
 
-const Schedule = mongoose.model('Forecast', ForecastSchema)
-export default Schedule
+const Forecast = mongoose.model('Forecast', ForecastSchema)
+export default Forecast

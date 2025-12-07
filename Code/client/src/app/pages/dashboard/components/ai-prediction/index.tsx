@@ -1,6 +1,7 @@
-import { pumpStatus } from '../../dummy'
+import useAIPredictionHook from './useAIPredictionHook'
 
 const AIPrediction = () => {
+  const { rainProbability, suggestion } = useAIPredictionHook()
   return (
     <>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
@@ -8,9 +9,9 @@ const AIPrediction = () => {
 
         <div>
           <div className='mb-2 text-lg'>
-            Xác suất mưa: <span className='text-2xl font-bold'>{pumpStatus.aiPrediction.rainProbability}%</span>
+            Xác suất mưa: <span className='text-2xl font-bold'>{rainProbability}%</span>
           </div>
-          <div className='text-sm text-gray-600'>Gợi ý: {pumpStatus.aiPrediction.suggestion}</div>
+          <div className='text-sm text-gray-600'>Gợi ý: {suggestion}</div>
         </div>
       </div>
     </>

@@ -4,7 +4,7 @@ import PumpStatus from './components/pump-status'
 import RecentAIDecision from './components/recent-ai-decision'
 import RecentAlert from './components/recent-alerts'
 import SensorData from './components/sensor-data'
-import WeeklySchedule from './components/weekly-schedule'
+import WeeklySchedule from './components/today-schedule'
 
 const DashBoardPage = () => {
   return (

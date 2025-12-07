@@ -4,9 +4,9 @@ import mqtt, { MqttClient } from 'mqtt'
 class MQTTClientService {
   private client: MqttClient | null = null
 
-  private readonly MQTT_BROKER_URL = import.meta.env.MQTT_BROKER_URL
-  private readonly MQTT_USERNAME = import.meta.env.MQTT_USERNAME
-  private readonly MQTT_PASSWORD = import.meta.env.MQTT_PASSWORD
+  private readonly MQTT_BROKER_URL = 'mqtts://c35f82397d674292948a051226f10fa6.s1.eu.hivemq.cloud'
+  private readonly MQTT_USERNAME = 'server'
+  private readonly MQTT_PASSWORD = 'Server123456'
 
   constructor() {
     this.connect()
@@ -17,6 +17,8 @@ class MQTTClientService {
       username: this.MQTT_USERNAME,
       password: this.MQTT_PASSWORD,
       protocol: 'wss',
+      port: 8884,
+      path: '/mqtt',
       reconnectPeriod: 2000,
       clean: true
     })

@@ -1,83 +1,61 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { forecastData } from '../../dummy'
+import { data } from './data'
+import useAIScheduleWeeklyHook from './useAIScheduleWeeklyHook'
 
 const AISchedule = () => {
+  const { dataSchedule } = useAIScheduleWeeklyHook()
   return (
-    <div className='rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
-      <h2 className='mb-6 text-2xl font-bold'>Lịch trình & Dự báo AI</h2>
+    <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
+      <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
+        <h2 className='mb-8 text-2xl font-bold text-gray-800'>Lịch tưới theo tuần</h2>
 
-      <div>
-        <h3 className='mb-2 text-lg font-semibold'>Dự báo</h3>
-        <p className='mb-4 text-gray-600'>(6 giờ tới)</p>
-
-        <div className='rounded-2xl border-2 border-gray-200 p-6'>
-          <ResponsiveContainer width='100%' height={250}>
-            <LineChart data={forecastData}>
-              <CartesianGrid strokeDasharray='3 3' stroke='#f0f0f0' />
-              <XAxis dataKey='time' tick={{ fontSize: 12 }} stroke='#6b7280' />
-              <YAxis
-                yAxisId='left'
-                tick={{ fontSize: 12 }}
-                stroke='#ef4444'
-                label={{ value: 'Nhiệt độ (°C)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
-              />
-              <YAxis
-                yAxisId='right'
-                orientation='right'
-                tick={{ fontSize: 12 }}
-                stroke='#3b82f6'
-                label={{ value: 'Độ ẩm (%)', angle: 90, position: 'insideRight', style: { fontSize: 12 } }}
-              />
-              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
-              <Legend wrapperStyle={{ fontSize: '14px' }} iconType='line' />
-              <Line
-                yAxisId='left'
-                type='monotone'
-                dataKey='temp'
-                stroke='#ef4444'
-                strokeWidth={3}
-                dot={{ fill: '#ef4444', r: 5 }}
-                name='Nhiệt độ (°C)'
-                activeDot={{ r: 7 }}
-              />
-              <Line
-                yAxisId='right'
-                type='monotone'
-                dataKey='humidity'
-                stroke='#3b82f6'
-                strokeWidth={3}
-                dot={{ fill: '#3b82f6', r: 5 }}
-                name='Độ ẩm (%)'
-                activeDot={{ r: 7 }}
-              />
-              <Line
-                yAxisId='right'
-                type='monotone'
-                dataKey='pressure'
-                stroke='#10b981'
-                strokeWidth={2}
-                strokeDasharray='5 5'
-                dot={{ fill: '#10b981', r: 4 }}
-                name='Áp suất (hPa)'
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-
-          <div className='mt-4 grid grid-cols-1 gap-3 md:grid-cols-3'>
-            <div className='rounded-lg border border-red-200 bg-red-50 p-3'>
-              <p className='text-xs font-medium text-red-600'>🌡️ Nhiệt độ</p>
-              <p className='mt-1 text-sm text-gray-700'>Dự báo tăng cao nhất 31°C vào +3h</p>
-            </div>
-            <div className='rounded-lg border border-blue-200 bg-blue-50 p-3'>
-              <p className='text-xs font-medium text-blue-600'>💧 Độ ẩm</p>
-              <p className='mt-1 text-sm text-gray-700'>Giảm xuống 58% rồi tăng trở lại</p>
-            </div>
-            <div className='rounded-lg border border-green-200 bg-green-50 p-3'>
-              <p className='text-xs font-medium text-green-600'>🌪️ Áp suất</p>
-              <p className='mt-1 text-sm text-gray-700'>Ổn định quanh 1011-1013 hPa</p>
-            </div>
-          </div>
+        <div className='max-h-[400px] overflow-x-auto overflow-y-auto rounded-xl border border-gray-200'>
+          <table className='w-full'>
+            <thead className='sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md'>
+              <tr>
+                <th className='px-6 py-4 text-left text-sm font-semibold tracking-wide uppercase'>Ngày</th>
+                <th className='px-6 py-4 text-left text-sm font-semibold tracking-wide uppercase'>Ca tưới</th>
+                <th className='px-6 py-4 text-left text-sm font-semibold tracking-wide uppercase'>Thời gian tưới</th>
+              </tr>
+            </thead>
+            <tbody className='divide-y divide-gray-200'>
+              {dataSchedule.map((day, dayIndex) =>
+                day.slots.map((slot, slotIndex) => (
+                  <tr key={`${dayIndex}-${slotIndex}`} className='transition-colors hover:bg-blue-50'>
+                    {slotIndex === 0 && (
+                      <td
+                        className='bg-blue-50 px-6 py-4 text-center font-bold text-gray-800'
+                        rowSpan={day.slots.length}
+                      >
+                        <div className='flex flex-col'>
+                          <span className='text-lg'>
+                            {new Date(day.date).toLocaleDateString('vi-VN', {
+                              day: '2-digit',
+                              month: '2-digit'
+                            })}
+                          </span>
+                          <span className='text-xs text-gray-600'>
+                            {new Date(day.date).toLocaleDateString('vi-VN', {
+                              weekday: 'long'
+                            })}
+                          </span>
+                        </div>
+                      </td>
+                    )}
+                    <td className='px-6 py-4'>
+                      <span className='inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800'>
+                        {slot.start} - {slot.end}
+                      </span>
+                    </td>
+                    <td className='px-6 py-4'>
+                      <span className='inline-flex items-center rounded-md bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800'>
+                        {slot.durationMin} phút
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

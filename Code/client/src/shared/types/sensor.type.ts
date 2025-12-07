@@ -5,4 +5,12 @@ interface DataSensor {
   pressureHpa: string
   timestamp: string
 }
-export type { DataSensor }
+
+interface AIPrediction {
+  chanceOfRain: number
+  date: string
+  recommendation: string
+  shouldIrrigate: boolean
+}
+
+export type { DataSensor, AIPrediction }

@@ -7,14 +7,14 @@ const NotificationPage = () => {
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
         {/* Header with Mark as read button */}
         <div className='mb-8 flex items-center justify-between'>
-          <h2 className='text-3xl font-bold'>Thông báo</h2>
+          <h2 className='text-2xl font-bold'>Thông báo</h2>
 
           <button
             onClick={handleMarkAllAsRead}
             className='flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-800'
           >
             <span>Đánh dấu đã đọc</span>
-            <div className='flex h-5 w-5 items-center justify-center rounded border-2 border-gray-400'>
+            <div className='flex h-5 w-5 cursor-pointer items-center justify-center rounded border-2 border-gray-400'>
               {isReadAll ? 'X' : ''}
             </div>
           </button>
