@@ -53,6 +53,13 @@ interface TodaySchedule {
   ]
 }
 
+interface RecentAIDecisionResponse {
+  date: string
+  chanceOfRain: number
+  shoudIrrigate: string
+  reason: string
+}
+
 export enum ROLE {
   Admin = 'ADMIN',
   User = 'USER'
@@ -65,5 +72,6 @@ export type {
   TodaySchedule,
   GetCountDeviceResposne,
   GetLogsResponse,
-  DataSensorResponse
+  DataSensorResponse,
+  RecentAIDecisionResponse
 }

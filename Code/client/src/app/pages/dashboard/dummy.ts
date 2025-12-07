@@ -8,15 +8,15 @@ const pumpStatus = {
 
 const devices = [
   { name: 'ESP32', status: 'online' },
-  { name: 'Pump', status: 'off' }
+  { name: 'Pump', status: 'online' }
 ]
 
 const decisions = [
   {
     time: '08:00',
     p60m: '0.82',
-    action: 'Hoãn 90m',
-    note: 'Pressure drop'
+    action: 'Hoãn tưới',
+    note: 'Khả năng mưa thấp vẫn tưới'
   },
   {
     time: '10:00',

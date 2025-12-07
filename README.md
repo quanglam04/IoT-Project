@@ -169,3 +169,46 @@ IoT/
 <p align="center">
   <img src="./Code/img/Sơ đồ tổng quan.png" alt="Image title_1" />
 </p>
+
+## Result
+
+<p align="center">
+  <img src="./Code/img/kq1.png" alt="Image title_1" />
+  <p align="center">Giao diện Dashboard</p>
+</p>
+<br>
+
+<p align="center">
+  <img src="./Code/img/kq2.png" alt="Image title_1" />
+  <p align="center">Giao diện hiển thị thay đổi biểu đồ trong ngày</p>
+</p>
+<br>
+
+<p align="center">
+  <img src="./Code/img/kq3.png" alt="Image title_1" />
+  <p align="center">Giao diện lịch tưới tự động</p>
+</p>
+<br>
+
+<p align="center">
+  <img src="./Code/img/kq4.png" alt="Image title_1" />
+  <p align="center">Giao diện nhật ký</p>
+</p>
+<br>
+
+<p align="center">
+  <img src="./Code/img/kq5.png" alt="Image title_1" />
+  <p align="center">Giao diện báo cáo</p>
+</p>
+<br>
+
+<p align="center">
+  <img src="./Code/img/kq6.png" alt="Image title_1" />
+  <p align="center">Giao diện cập nhật firmware</p>
+</p>
+<br>
+
+<p align="center">
+  <img src="./Code/img/kq7.png" alt="Image title_1" />
+  <p align="center">Giao diện quản lý người dùng</p>
+</p>

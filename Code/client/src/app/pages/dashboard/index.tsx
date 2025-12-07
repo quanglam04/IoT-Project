@@ -30,14 +30,11 @@ const DashBoardPage = () => {
         </div>
 
         {/* Hàng 2 */}
-        <div className='lg:col-span-1'>
+        <div className='lg:col-span-2'>
           <RecentAIDecision />
         </div>
         <div className='lg:col-span-1'>
           <WeeklySchedule />
-        </div>
-        <div className='lg:col-span-1'>
-          <RecentAlert />
         </div>
       </div>
     </div>

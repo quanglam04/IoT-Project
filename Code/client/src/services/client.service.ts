@@ -6,6 +6,7 @@ import type {
   GetLogsResponse,
   LoginRequest,
   LoginResponse,
+  RecentAIDecisionResponse,
   TodaySchedule,
   User
 } from '@/shared/types/auth.type'
@@ -68,6 +69,11 @@ class _ClientService {
 
   async getTodaySchedule() {
     const response = await http.get<ApiResponse<TodaySchedule>>('/users/schedule/today')
+    return response
+  }
+
+  async getHistoryAIDecision() {
+    const response = await http.get<ApiResponse<RecentAIDecisionResponse[]>>('/users/ai/decision')
     return response
   }
 }
