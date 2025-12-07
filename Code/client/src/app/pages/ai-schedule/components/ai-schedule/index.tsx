@@ -8,7 +8,7 @@ const AISchedule = () => {
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
         <h2 className='mb-8 text-2xl font-bold text-gray-800'>Lịch tưới theo tuần</h2>
 
-        <div className='max-h-[400px] overflow-x-auto overflow-y-auto rounded-xl border border-gray-200'>
+        <div className='max-h-[500px] overflow-x-auto overflow-y-auto rounded-xl border border-gray-200'>
           <table className='w-full'>
             <thead className='sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md'>
               <tr>

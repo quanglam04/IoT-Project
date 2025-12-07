@@ -11,7 +11,7 @@ const AIPrediction = () => {
           <div className='mb-2 text-lg'>
             Xác suất mưa: <span className='text-2xl font-bold'>{rainProbability}%</span>
           </div>
-          <div className='text-sm text-gray-600'>Gợi ý: {suggestion}</div>
+          <div className='text-sm text-gray-600'>{suggestion}</div>
         </div>
       </div>
     </>

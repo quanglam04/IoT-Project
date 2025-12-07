@@ -17,7 +17,7 @@ const PumpStatus = () => {
             onClick={() => {
               handleOnClick()
             }}
-            className={`rounded-xl ${open ? 'bg-blue-600' : 'bg-gray-400'} px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-700`}
+            className={`cursor-pointer rounded-xl ${open ? 'bg-blue-600' : 'bg-gray-400'} px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-700`}
           >
             {!open ? 'Bật' : 'Tắt'}
           </button>
