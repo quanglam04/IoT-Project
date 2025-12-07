@@ -2,79 +2,143 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+
+#include "../network/fota_update.h"
 #include "../config.h"
 #include "../network/ntp_time.h"
 #include "../control/pump_control.h"
+#include "../control/schedule.h"
 
 // WiFiClientSecure cho kết nối TLS (HiveMQ Cloud)
 static WiFiClientSecure espClient;
 static PubSubClient mqttClient(espClient);
 
 // Root CA (Let's Encrypt)
-const char* root_ca PROGMEM = R"EOF(
+const char* root_ca = R"EOF(
 -----BEGIN CERTIFICATE-----
 MIIFazCCA1OgAwIBAgISA5u4k2a9A3Vdjf6zVJpO0I48MA0GCSqGSIb3DQEBCwUA
 MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKDA1MZXQncyBFbmNyeXB0MQ8wDQYDVQQD
-DAZJQ0FfQ0EwHhcNMjQwMzA1MDcwMDAwWhcNMzQwMzA1MDcwMDAwWjBKMQswCQYD
-VQQGEwJVUzEWMBQGA1UECgwNTGV0J3MgRW5jcnlwdDEPMA0GA1UEAwwGSUNBX0NB
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAuP6G3c8D2qzYwYHhzZoK
-3I0NJo+0DBTuwbO2hc+lF6Pb4L91A5CGFnjSTBPG2E4IbO4T2/yFoR9br3uT5ZNP
-dE1vBpwEMJXrT2UO0EyqlC9a3WSCXW3JzkFh5yGhJYrbbdkd21Cm4ynwrDUkI4fA
-YB0Rjffo3h3cMbW7K2E9WsvOrq6+n2GEnlghFOuZrIhArwNh9ZJH/boTVem6NYG4
-v+H86y5b6BfL53sIoe7ZbAbnT2IB0q9zHKt+R5EX6QeAbnRAh2+7R2i5gOGFs4uD
-p2MZgkN4Su9s4qDzpgY1tOvZZiR8MFQDXVYsoZZUsJ2SgUUDipM+5v3UQ+HxWe61
-53dQTVugCVVzt8r+wFc3/p7qBlDUUxR9QknX3Jm7zB0kB8qZzAF+3ZhD1r1Z+xV5
-AUpjGLsNnYwMjIUZyCP2f/fDvbKcE2q8IotjQOmrkAztL3tM1RQJc7e8yOlfMOMk
-d/6kDdOdAlkE0Ph7JvbAYETB95nTTjZht+SbpH8Cw+Pp0S1tXsvr17B8HXz/mQ==
+DAZJQ0FfQ0EwHhcNMjQ0MDMwNTA3MDAwMFoXDTM0MDMwNTA3MDAwMFowSjELMAkG
+A1UEBhMCVVMxFjAUBgNVBAoMDUxl dCdzIEVuY3J5cHQxDzANBgNVBAMMBklDQV9D
+QTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALj+ht3PA9qs2MG B4c2a
+Ct y ND Sa P tAwU7sGztoXPpRej2yL91A5CGFnjSTBPG2E4Ib O E9v8haEfW697k+WT
+T3RNb wac BDCV60 5lDtBMqpQvWt1kg l1tyc5BYeco aSlut t2R3bUKbjKfCsNSQjh
+8BgHRGN9 j eHdwxtbst
+...
 -----END CERTIFICATE-----
 )EOF";
 
-// ========== Callback khi nhận message MQTT ==========
+
+// ----------------------------------------------------------------------------
+// CALLBACK – Nhận dữ liệu từ MQTT
+// ----------------------------------------------------------------------------
 void onMqttMessage(char* topic, byte* payload, unsigned int length) {
+
+    // ------------------------------
+    // Convert payload → String
+    // ------------------------------
     String msg;
-    for (unsigned int i = 0; i < length; i++) msg += (char)payload[i];
+    msg.reserve(length);
+    for (size_t i = 0; i < length; i++) msg += (char)payload[i];
+
     Serial.printf("📩 MQTT <- %s : %s\n", topic, msg.c_str());
 
-    // Nếu payload là JSON
-    DynamicJsonDocument doc(256);
-    auto err = deserializeJson(doc, msg);
+    // Parse JSON nếu hợp lệ
+    DynamicJsonDocument doc(512);
+    bool jsonOK = (deserializeJson(doc, msg) == DeserializationError::Ok);
 
-    String action;
-    if (!err) {
-        action = doc["action"] | "";
-    } else {
-        // Nếu không phải JSON, coi payload là "ON"/"OFF"
-        action = msg;
-    }
+    // Action fallback cho payload dạng "ON", "OFF"
+    String action = jsonOK ? (doc["action"] | "") : msg;
 
-    // xử lý pump
+    // =========================================================================
+    // Xử lý điều khiển bơm
+    // topic: device/control/pump
+    // =========================================================================
     if (String(topic) == TOPIC_DEVICE_CONTROL) {
-        Serial.printf("🧠 Command: %s\n", action.c_str());
-        if (action == "ON") pump_on();
+        Serial.printf("🧠 Pump command: %s\n", action.c_str());
+
+        if (action == "ON")      pump_on();
         else if (action == "OFF") pump_off();
 
         String state = pump_is_on() ? "ON" : "OFF";
-        String logMsg = "{\"source\":\"MQTT\",\"pump\":\"" + state + "\"}";
+        String logMsg = "{\"source\":\"mqtt\",\"pump\":\"" + state + "\"}";
         mqtt_publish(TOPIC_DEVICE_STATUS, logMsg);
+        return;
+    }
+
+    // =========================================================================
+    // FORCE command (reset, restart…)
+    // =========================================================================
+    if (String(topic) == TOPIC_DEVICE_FORCE) {
+        Serial.printf("🧠 Force command: %s\n", action.c_str());
+        
+        if (action == "RESTART") {
+            Serial.println("🔄 Restarting device...");
+            delay(300);
+            ESP.restart();
+        }
+        return;
+    }
+
+    // =========================================================================
+    // FOTA Update
+    // topic: update/firmware
+    // JSON mẫu: { "url": "https://server.com/firmware.bin" }
+    // =========================================================================
+    if (String(topic) == TOPIC_DEVICE_UPDATE) {
+        Serial.println("🚀 OTA command received!");
+
+        if (!doc.containsKey("url")) {
+            Serial.println("⚠️ ERROR: Payload OTA không có trường 'url'");
+            return;
+        }
+
+        String otaUrl = doc["url"].as<String>();
+        Serial.println("🔗 Firmware URL: " + otaUrl);
+
+        // Gọi FOTA từ file fota_update.cpp
+        fota_update(otaUrl);
+        return;
+    }
+
+    // nhận schedule JSON
+    if (String(topic) == TOPIC_DEVICE_SCHEDULE) {
+        Serial.println("📥 Received irrigation schedule via MQTT");
+        irrigation_load_from_json(msg); // msg is the String payload you already built
+        return;
     }
 }
 
 // =================== Kết nối MQTT ===================
 void mqtt_connect() {
     while (!mqttClient.connected()) {
-        Serial.print("🔄 Connecting to MQTT...");
+
+        Serial.print("🔄 Connecting to MQTT... ");
+
         String clientId = String(DEVICE_ID) + "-" + String(random(0xffff), HEX);
-        if (mqttClient.connect(clientId.c_str(), MQTT_USER, MQTT_PASS)) {
+
+        // LWT — thông báo khi thiết bị chết đột ngột
+        bool ok = mqttClient.connect(
+            clientId.c_str(),
+            MQTT_USER,
+            MQTT_PASS,
+            LWT_TOPIC,
+            1,          // QoS
+            false,       // Retain
+            "{\"status\":\"offline\"}"
+        );
+
+        if (ok) {
             Serial.println("✅ Connected!");
 
-            // Subscribe các topic lệnh
             mqttClient.subscribe(TOPIC_DEVICE_CONTROL);
             mqttClient.subscribe(TOPIC_DEVICE_FORCE);
+            mqttClient.subscribe(TOPIC_DEVICE_UPDATE);
+            mqttClient.subscribe(TOPIC_DEVICE_SCHEDULE);
 
-            // Thông báo thiết bị online
             mqtt_publish(TOPIC_DEVICE_STATUS, "{\"status\":\"online\"}");
         } else {
-            Serial.printf("❌ Failed rc=%d. Retry in 5s...\n", mqttClient.state());
+            Serial.printf("❌ Failed rc=%d - retry in 5s\n", mqttClient.state());
             delay(5000);
         }
     }
@@ -110,3 +174,15 @@ void mqtt_publish(const char* topic, const String &payload) {
     mqttClient.publish(topic, payload.c_str());
     Serial.printf("📤 MQTT %s → %s\n", topic, payload.c_str());
 }
+
+// MQTT Flush
+void mqtt_flush(unsigned long timeoutMs) {
+    unsigned long deadline = millis() + timeoutMs;
+    while (millis() < deadline) {
+        mqtt_loop();
+        delay(0);  // yield cho WiFi/MQTT xử lý tối đa
+    }
+}
+
+
+

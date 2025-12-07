@@ -37,3 +37,29 @@ String iso_now(){
     strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm);      // Định dạng thời gian thành chuỗi ISO 8601 
     return String(buf);
 }
+
+// parse ISO8601 basic without timezone suffix: "2025-12-10T07:00:00" or "2025-12-10T07:00:00Z"
+// Assumes local time (configTime was called earlier). Returns time_t (seconds since epoch).
+time_t parseISO8601(const char* iso8601) {
+    if (iso8601 == nullptr) return 0;
+    int year=0, mon=0, day=0, hour=0, min=0, sec=0;
+    // support both with and without trailing 'Z'
+    // formats: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD HH:MM:SS
+    if (sscanf(iso8601, "%4d-%2d-%2dT%2d:%2d:%2d", &year, &mon, &day, &hour, &min, &sec) < 6) {
+        if (sscanf(iso8601, "%4d-%2d-%2d %2d:%2d:%2d", &year, &mon, &day, &hour, &min, &sec) < 6) {
+            return 0;
+        }
+    }
+    struct tm tm;
+    memset(&tm, 0, sizeof(tm));
+    tm.tm_year = year - 1900;
+    tm.tm_mon  = mon - 1;
+    tm.tm_mday = day;
+    tm.tm_hour = hour;
+    tm.tm_min  = min;
+    tm.tm_sec  = sec;
+    tm.tm_isdst = -1;
+    // mktime treats tm as local time; configTime should already set TZ
+    time_t t = mktime(&tm);
+    return t;
+}
