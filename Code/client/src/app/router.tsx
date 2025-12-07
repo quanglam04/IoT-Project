@@ -46,11 +46,7 @@ const router: RouteObject[] = [
       },
       {
         path: 'report-page',
-        element: (
-          <RequireAdmin>
-            <ReportPage />
-          </RequireAdmin>
-        ) // admin
+        element: <ReportPage /> // admin
       },
       {
         path: 'config-page',

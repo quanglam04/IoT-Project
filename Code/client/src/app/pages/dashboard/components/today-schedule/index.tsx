@@ -7,7 +7,7 @@ const WeeklySchedule = () => {
     <div className='flex h-full flex-col rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
       <h2 className='mb-2 text-2xl font-bold'>Lịch tưới ngày hôm nay</h2>
 
-      <div className='flex flex-1 items-center justify-center p-4'>
+      <div className='flex max-h-[400px] flex-1 justify-center overflow-y-auto p-4'>
         <div className='w-full max-w-md space-y-4'>
           {todaySchedule.slots.map((slot, index) => (
             <div
