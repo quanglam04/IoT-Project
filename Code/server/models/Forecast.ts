@@ -11,11 +11,15 @@ const ForecastSchema = new Schema({
         min: 0,
         max: 1
     },
-    recommendation: { 
+    reason: { 
         type: String
     },
     shouldIrrigate: {
         type: Boolean
+    },
+    slot_time:{
+        type: Date,
+        required: true,
     }
 });
 

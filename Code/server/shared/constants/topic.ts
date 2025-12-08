@@ -5,6 +5,7 @@ export const Topic = {
   UPLOAD_FILE_FIRMWARE: 'upload/firmware',
   AI_FORECAST_RAIN: 'ai/forecast/rain',
   AI_SCHEDULE_IRRIGATION: 'ai/schedule/irrigation',
+  SCHEDULE_WEEKLY: 'schedule/weekly',
 }
 
 export default Topic
