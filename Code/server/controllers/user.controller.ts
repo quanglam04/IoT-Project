@@ -4,11 +4,11 @@ import HTTPStatus from "../shared/constants/httpStatus"
 import logger from "../utils/log"
 import * as jwt from 'jsonwebtoken'
 import { AuthRequest } from '../shared/types/util.type'
-import { getDeviceCount } from '../services/device.service'
 import Audit, { AuditEvent } from '../models/Audit'
 import { Parser } from 'json2csv'
 import SensorData from '../models/SensorData'
 import Schedule from '../models/Schedule'
+import { io } from '..'
 
 
 const login = async (req: Request, res: Response) => {
@@ -109,38 +109,6 @@ const getListUser = async (req: AuthRequest, res: Response) => {
   }
 }
 
-const getCountDevice = async (req: AuthRequest, res: Response) => {
-  logger.info('Lấy số lượng thiết bị kết nốt')
-  try {
-    const currentUserRole = (req.user as jwt.JwtPayload).role
-    if(currentUserRole === UserRole.ADMIN){
-      // Lấy số lượng từ service (bộ nhớ)
-      const deviceCount = getDeviceCount();
-
-      return res.status(HTTPStatus.OK).json({
-        status: HTTPStatus.OK,
-        message: 'Lấy số lượng thiết bị đang kết nối thành công',
-        data: {
-          numberOfDevices: deviceCount
-        }
-      });
-    }
-    else{
-      logger.error('Bạn không có quyền hạn này')
-      return res.status(HTTPStatus.FORBIDDEN).json({
-        status: HTTPStatus.FORBIDDEN,
-        message: 'Bạn không có quyền hạn này',
-      })
-    }
-  } catch (error : any) {
-    logger.error('Lỗi không thể đếm thiết bị: ', error)
-    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-      status: HTTPStatus.INTERNAL_SERVER_ERROR,
-      message: 'Lỗi server',
-      data: null
-    })
-  }
-}
 
 const formatDate = (date: Date): string => {
   if (!date) return '';
@@ -331,4 +299,4 @@ const exportAiReport = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { login, getListUser, getCountDevice, getLogs, exportESP32Report, exportAiReport}
+export { login, getListUser, getLogs, exportESP32Report, exportAiReport}

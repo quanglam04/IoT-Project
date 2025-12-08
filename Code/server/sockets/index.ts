@@ -11,11 +11,8 @@ export const setupSocket = (io: Server) => {
 
   // Xử lý kết nối socket
   io.on('connection', (socket) => {
-    logger.info(`Một client đã kết nối: ${socket.id}`)
-
     // Lắng nghe sự kiện "disconnect"
     socket.on('disconnect', () => {
-      logger.info(`Client đã ngắt kết nối: ${socket.id}`)
     })
   })
 }
