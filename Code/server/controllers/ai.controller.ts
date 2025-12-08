@@ -194,44 +194,94 @@ export const handleIrrigationSchedule = async (payload: string) => {
  * API: Lấy lịch tưới của ngày hôm nay
  * GET /api/ai/schedule/today
  */
-export const getScheduleToday = async (req: AuthRequest, res: Response) => {
-  logger.info(`Lấy lịch tưới ngày hôm nay`)
-  try {
-    //  Xác định "Hôm nay" theo giờ Việt Nam (GMT+7)
-    // Vì server có thể chạy giờ UTC, nên cần cộng 7 tiếng để ra ngày VN chính xác
-    const now = new Date();
-    const vnTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    const todayStr = vnTime.toISOString().split('T')[0]; // YYYY-MM-DD (Ví dụ: "2025-12-09")
 
-    // Tìm trong DB các slot có date trùng với hôm nay
+export const getScheduleToday = async (req: AuthRequest, res: Response) => {
+  logger.info(`Lấy lịch tưới hôm nay`);
+
+  try {
+    const nowVN = moment.tz(VN_TZ);
+    const todayStr = nowVN.format('YYYY-MM-DD');
+
     const schedules = await Schedule.find({ date: todayStr })
-      .select('start end durationMin')
+      .select('start end durationMin decision')
       .sort({ start: 1 })
       .lean();
 
-    const slots = schedules.map((slot) => {
-      return{
-        start: new Date(slot.start).toLocaleString('vi-VN').split(' ')[0].substring(0, 5),
-        end: new Date(slot.end).toLocaleString('vi-VN').split(' ')[0].substring(0, 5),
-        durationMin: slot.durationMin
-      };
+    if (!schedules || schedules.length === 0) {
+      return res.status(HTTPStatus.OK).json({
+        status: HTTPStatus.OK,
+        message: 'Hôm nay không có lịch tưới',
+        data: { date: todayStr, slots: [] }
+      });
+    }
+
+    const currentTime = moment.tz(VN_TZ);
+
+    // Tìm slot gần nhất (dù đã qua hay chưa tới)
+    let nearestSlot: any = null;
+    let nearestDiff = Infinity;
+
+    // Danh sách các slot được phép có decision
+    const slotsWithDecision = new Set<string>();
+
+    schedules.forEach((slot) => {
+      const startMoment = moment.tz(slot.start, VN_TZ);
+      const endMoment = moment.tz(slot.end, VN_TZ);
+
+      // 1. Nếu slot đã bắt đầu (đã qua hoặc đang diễn ra) → chắc chắn có decision
+      if (currentTime.isSameOrAfter(startMoment)) {
+        slotsWithDecision.add(slot._id.toString());
+      }
+
+      // 2. Tính khoảng cách đến giờ bắt đầu để tìm slot gần nhất
+      const diff = Math.abs(currentTime.diff(startMoment, 'minutes'));
+      if (diff < nearestDiff) {
+        nearestDiff = diff;
+        nearestSlot = { ...slot, startMoment, endMoment };
+      }
     });
+
+    // 3. Slot gần nhất (dù chưa tới) → cũng được thêm decision
+    if (nearestSlot) {
+      slotsWithDecision.add(nearestSlot._id.toString());
+    }
+
+    // Format kết quả
+    const slots = schedules.map((slot) => {
+      const startMoment = moment.tz(slot.start, VN_TZ);
+      const endMoment = moment.tz(slot.end, VN_TZ);
+
+      const result: any = {
+        start: startMoment.format('HH:mm'),
+        end: endMoment.format('HH:mm'),
+        durationMin: slot.durationMin,
+      };
+
+      // Chỉ thêm decision nếu nằm trong danh sách được phép
+      if (slotsWithDecision.has(slot._id.toString())) {
+        result.decision = slot.decision ?? true;
+      }
+
+      return result;
+    });
+
+    logger.info(`Lịch tưới hôm nay (${todayStr})`);
 
     return res.status(HTTPStatus.OK).json({
       status: HTTPStatus.OK,
       message: 'Lấy lịch tưới hôm nay thành công',
       data: {
         date: todayStr,
-        slots: slots
+        slots: slots,
       }
     });
 
-  } catch (error) {
-    logger.error(`Lỗi khi lấy lịch hôm nay: ${error}`);
+  } catch (error: any) {
+    logger.error(`Lỗi khi lấy lịch hôm nay: ${error.message || error}`);
     return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
       status: HTTPStatus.INTERNAL_SERVER_ERROR,
       message: 'Lỗi server',
-    })
+    });
   }
 };
 
