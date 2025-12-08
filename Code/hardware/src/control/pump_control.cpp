@@ -126,8 +126,8 @@ void pump_update() {
 // MQTT publish
 // =======================
 void pump_publish_status() {
-#ifdef TOPIC_DEVICE_STATUS
+#ifdef TOPIC_PUMP_STATUS
     String payload = String("{\"pump\":\"") + (pumpState ? "ON" : "OFF") + "\"}";
-    mqtt_publish(TOPIC_DEVICE_STATUS, payload);
+    mqtt_publish(TOPIC_PUMP_STATUS, payload);
 #endif
 }

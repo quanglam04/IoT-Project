@@ -52,12 +52,12 @@ void setup() {
 // LOOP CHÍNH
 // ======================================================
 void loop() {
-    // Kiểm tra WiFi
-    if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("⚠️ WiFi lost. Reconnecting...");
-        WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-        delay(5000);
-    }
+    // // Kiểm tra WiFi
+    // if (WiFi.status() != WL_CONNECTED) {
+    //     Serial.println("⚠️ WiFi lost. Reconnecting...");
+    //     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    //     delay(5000);
+    // }
 
     // MQTT loop & callback
     mqtt_loop();
