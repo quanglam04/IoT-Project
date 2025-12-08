@@ -26,6 +26,9 @@ const WeeklySchedule = () => {
                 <span className='rounded-md bg-white px-4 py-2 shadow-sm'>{slot.start}</span>
                 <span className='text-blue-600'>→</span>
                 <span className='rounded-md bg-white px-4 py-2 shadow-sm'>{slot.end}</span>
+                <span className='rounded-md px-4 py-2'>
+                  {slot.decision !== undefined ? (slot.decision ? '✅' : '❌') : ''}
+                </span>
               </div>
             </div>
           ))}

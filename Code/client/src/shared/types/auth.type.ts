@@ -49,6 +49,7 @@ interface TodaySchedule {
       start: string
       end: string
       durationMin: number
+      decision?: boolean
     }
   ]
 }
@@ -56,7 +57,7 @@ interface TodaySchedule {
 interface RecentAIDecisionResponse {
   date: string
   chanceOfRain: number
-  shoudIrrigate: string
+  decision: boolean
   reason: string
 }
 
