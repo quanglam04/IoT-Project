@@ -1,11 +1,13 @@
 import microcontrollerService from '@/services/microcontroller.service'
+import mqttClientService from '@/services/mqtt.service'
 import useNotificationHook from '@/shared/hook/useNotificationHook'
 import { HTTP_STATUS } from '@/shared/types/http.type'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-const useHook = () => {
-  const [open, setOpen] = useState<boolean>(false)
+const usePumpStatusHook = () => {
   const { showSuccess } = useNotificationHook()
+  const [open, setOpen] = useState<boolean>(false)
+
   const handleOnClick = async () => {
     const response = await microcontrollerService.changeStatusPump(open)
     if (response.status == HTTP_STATUS.OK) {
@@ -14,6 +16,19 @@ const useHook = () => {
       setOpen((prev) => !prev)
     }
   }
+
+  useEffect(() => {
+    mqttClientService.subscribe('device/pump/status', (message: string) => {
+      const { pump } = JSON.parse(message)
+      console.log('pump:::', pump)
+      if (pump === 'ON') {
+        setOpen(true)
+      } else {
+        setOpen(false)
+      }
+    })
+  }, [open, showSuccess])
+
   return { open, handleOnClick }
 }
-export default useHook
+export default usePumpStatusHook

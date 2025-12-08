@@ -2,7 +2,6 @@ import useTodayScheduleHook from './useTodayScheduleHook'
 
 const WeeklySchedule = () => {
   const { todaySchedule } = useTodayScheduleHook()
-  console.log(todaySchedule)
   return (
     <div className='flex h-full flex-col rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>
       <h2 className='mb-2 text-2xl font-bold'>Lịch tưới ngày hôm nay</h2>

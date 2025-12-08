@@ -2,7 +2,7 @@ interface DataSensor {
   temperature: number
   humidity: number
   soilMoisture: number
-  pressureHpa: string
+  pressureHpa: number
   timestamp: string
 }
 
