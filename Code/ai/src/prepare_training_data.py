@@ -314,11 +314,11 @@ def create_irrigation_events_synthetic() -> None:
         if should_irrigate:
             # Tính duration dựa trên độ khô
             if soil_moist < 25.0:
-                duration_min = 20
+                duration_min = 3
             elif soil_moist < 30.0:
-                duration_min = 15
+                duration_min = 2
             else:
-                duration_min = 10
+                duration_min = 1
             
             start_ts = ts.replace(minute=0, second=0, microsecond=0)
             end_ts = start_ts + timedelta(minutes=duration_min)

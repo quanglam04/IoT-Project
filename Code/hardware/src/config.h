@@ -22,6 +22,7 @@
 #define TOPIC_DEVICE_STATUS     "device/status/" DEVICE_ID      // Gửi trạng thái hoạt động/kết nối của thiết bị => Publish
 #define TOPIC_DEVICE_LOG        "device/log/" DEVICE_ID         // Gửi log/cảnh báo về server => Publish
 #define TOPIC_DEVICE_SCHEDULE   "schedule/weekly"               // Topic nhận lịch tưới
+#define TOPIC_PUMP_STATUS       "device/pump/status"            // Topic publish trạng thái của bơm
 
 // Pins
 #define PIN_SOIL_ADC        36      // Analog input của cảm biến độ ẩm đất

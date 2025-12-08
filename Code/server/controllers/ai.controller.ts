@@ -120,7 +120,7 @@ export const handleIrrigationSchedule = async (payload: string) => {
         end: end.toDate(),
         durationMin: slot.duration_min,
         date: dateKey,
-        decision: (slot.decision === 'confirm' ? true : false),
+        decision: slot.decision ? slot.decision == 'confirm'?true:false : true,
         note: `Tưới ${slot.duration_min} phút [${timeStart} - ${timeEnd}]`,
       });
 
@@ -130,7 +130,7 @@ export const handleIrrigationSchedule = async (payload: string) => {
         start: timeStart,
         end: timeEnd,
         durationMin: slot.duration_min,
-        decision: slot.decision ? slot.decision == 'confirm'?true:false : true
+        decision: slot.decision ? slot.decision == 'confirm'?true:false : null
       });
 
       // Gửi phần cứng,giữ nguyên định dạng 
@@ -159,6 +159,20 @@ export const handleIrrigationSchedule = async (payload: string) => {
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
+    // xóa lịch tưới cũ
+    if (schedulesToSave.length > 0) {
+      // Lấy danh sách tất cả các date có trong payload mới
+      const datesToClean = [...new Set(schedulesToSave.map(s => s.date))];
+
+      if (datesToClean.length > 0) {
+        const deleteResult = await Schedule.deleteMany({
+          date: { $in: datesToClean }
+        });
+
+        logger.info(`Đã xóa ${deleteResult.deletedCount} lịch tưới cũ của các ngày: ${datesToClean.join(', ')}`);
+      }
+    }
+
     // Lưu DB
     if (schedulesToSave.length > 0) {
       await Schedule.insertMany(schedulesToSave);
@@ -181,7 +195,6 @@ export const handleIrrigationSchedule = async (payload: string) => {
         logger.error(`MQTT publish lỗi: ${err}`);
       } else {
         logger.info(`Đã gửi lịch tưới cho thiết bị qua topic: ${Topic.SCHEDULE_WEEKLY}`);
-        logger.info(JSON.stringify(groupedDataForHardWare, null, 2));
       }
     });
 
@@ -286,7 +299,7 @@ export const getScheduleToday = async (req: AuthRequest, res: Response) => {
 };
 
 export const getAiDecision = async (req: AuthRequest, res: Response) => {
-  logger.info(`Lấy 5 quyết định của AI`)
+  logger.info(`Lấy 10 quyết định của AI`)
   try {
     const forecasts = await DecisionAI.find() //Decision AI
       .sort({ date: -1 })
@@ -311,7 +324,7 @@ export const getAiDecision = async (req: AuthRequest, res: Response) => {
 
     return res.status(HTTPStatus.OK).json({
       status: HTTPStatus.OK,
-      message: 'Lấy thành công 5 quyết định mới nhất',
+      message: 'Lấy thành công 10 quyết định mới nhất',
       data: formattedDecisions
     })
 

@@ -1,7 +1,9 @@
-import useHook from './hook'
+type PropPumpStatus = {
+  handleOnClick: () => Promise<void>
+  open: boolean
+}
 
-const PumpStatus = () => {
-  const { handleOnClick, open } = useHook()
+const PumpStatus = ({ handleOnClick, open }: PropPumpStatus) => {
   return (
     <div className='space-y-4'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-6 shadow-lg'>

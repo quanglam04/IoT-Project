@@ -3,6 +3,7 @@ import useAIScheduleWeeklyHook from './useAIScheduleWeeklyHook'
 
 const AISchedule = () => {
   const { dataSchedule } = useAIScheduleWeeklyHook()
+  console.log(dataSchedule)
   return (
     <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
       <div className='rounded-3xl border-2 border-gray-800 bg-white p-8 shadow-lg'>
@@ -42,9 +43,16 @@ const AISchedule = () => {
                       </td>
                     )}
                     <td className='px-6 py-4'>
-                      <span className='inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800'>
-                        {slot.start} - {slot.end}
-                      </span>
+                      <div className='inline-flex items-center gap-3'>
+                        <span className='inline-block w-32 rounded-full bg-green-100 px-4 py-2 text-center text-sm font-medium text-green-800'>
+                          {slot.start} - {slot.end}
+                        </span>
+                        {slot.decision !== null && (
+                          <span className='text-sm leading-none'>
+                            {slot.decision ? '✅ Áp dụng ca tưới này' : '❌ Hoãn ca tưới này'}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className='px-6 py-4'>
                       <span className='inline-flex items-center rounded-md bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800'>

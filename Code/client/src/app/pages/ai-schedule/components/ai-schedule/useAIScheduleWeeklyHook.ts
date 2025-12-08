@@ -7,6 +7,8 @@ const useAIScheduleWeeklyHook = () => {
   const [dataSchedule, setDataSchedule] = useState<TodaySchedule[]>([])
   useEffect(() => {
     socketService.onReceiveScheduleFromAI((data: TodaySchedule[]) => {
+      console.log(data)
+      storageService.set('scheduleWeekly', JSON.stringify(data))
       setDataSchedule(data)
     })
   }, [])

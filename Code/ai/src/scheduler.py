@@ -284,9 +284,9 @@ def build_day_plans(
                 slots.append(
                     {
                         "start_ts": start.isoformat(),
-                        "end_ts": (start + timedelta(minutes=10)).isoformat(),
+                        "end_ts": (start + timedelta(minutes=1)).isoformat(),
                         "device_id": "esp32-01",
-                        "duration_min": 10,
+                        "duration_min": 1,
                     }
                 )
             else:
@@ -304,9 +304,9 @@ def build_day_plans(
                     slots.append(
                         {
                             "start_ts": start.isoformat(),
-                            "end_ts": (start + timedelta(minutes=20)).isoformat(),
+                            "end_ts": (start + timedelta(minutes=3)).isoformat(),
                             "device_id": "esp32-01",
-                            "duration_min": 20,
+                            "duration_min": 3,
                         }
                     )
             elif soil_ref < season.soil_ok:
@@ -317,9 +317,9 @@ def build_day_plans(
                 slots.append(
                     {
                         "start_ts": start.isoformat(),
-                        "end_ts": (start + timedelta(minutes=15)).isoformat(),
+                        "end_ts": (start + timedelta(minutes=2)).isoformat(),
                         "device_id": "esp32-01",
-                        "duration_min": 15,
+                        "duration_min": 2,
                     }
                 )
             else:
