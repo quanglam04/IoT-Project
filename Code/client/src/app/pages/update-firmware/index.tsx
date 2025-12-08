@@ -3,7 +3,7 @@ import { Cpu, AlertTriangle, CheckCircle2, Calendar, Zap, UploadCloud } from 'lu
 import useUpdateFirmwareHook from './useUpdateFirmwareHook'
 
 const UpdateFirmwarePage = () => {
-  const { currentVersion, uploadProps, handleUpload, fileList, uploading, lastUpdateDate } = useUpdateFirmwareHook()
+  const { version, uploadProps, handleUpload, fileList, uploading, lastUpdateDate } = useUpdateFirmwareHook()
 
   return (
     <div className='rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-6'>
@@ -32,7 +32,7 @@ const UpdateFirmwarePage = () => {
 
                 <div className='flex items-center justify-between'>
                   <div className='flex items-baseline gap-4'>
-                    <span className='text-6xl font-bold text-white'>{currentVersion}</span>
+                    <span className='text-6xl font-bold text-white'>v{version}</span>
                     <span className='rounded-full bg-white/20 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-sm'>
                       Đang hoạt động
                     </span>

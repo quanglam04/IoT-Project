@@ -12,7 +12,7 @@ const useUpdateFirmwareHook = () => {
   const [lastUpdateDate, setLastUpdateDate] = useState<string>('')
   const { showError, showSuccess } = useNotificationHook()
   const { start, finish, isLoading } = useLoadingHook()
-  const currentVersion = 'v1.2.3'
+  const [version, setVersion] = useState<string>('')
 
   const uploadProps: UploadProps = {
     onRemove: (file) => {
@@ -47,19 +47,34 @@ const useUpdateFirmwareHook = () => {
 
       const response = await clientService.uploadFile(file)
       if (response.status === 200) {
-        // lắng nghe thông tin từ hivemq, nếu thành công => ok
-        console.log('upload thành công')
         mqttClientService.subscribe('upload/status', (message: string) => {
-          console.log('lắng nghe')
-          // có thể lấy thông tin version để hiển thị, đồng thời set lại ngày
           const { status } = JSON.parse(message)
-          console.log(`status: ${status}`)
           if (status === 'done') {
-            console.log('status::::', status)
-            const updatedAt = getDateFormat()
+            let [a, b, c] = version.split('.').map(Number)
+            // Tăng version
+            c += 1
+
+            if (c >= 10) {
+              c = 1
+              b += 1
+            }
+
+            if (b >= 10) {
+              b = 1
+              a += 1
+            }
+
+            const versionUpdated = `${a}.${b}.${c}`
+            const updatedAt = getDateFormat({ onlyDate: false })
+            setVersion(versionUpdated)
             setLastUpdateDate(updatedAt)
             localStorage.setItem('updatedAt', updatedAt)
+            localStorage.setItem('version', versionUpdated)
             showSuccess('Upload firmware thành công')
+            finish()
+          }
+          if (status === 'error') {
+            showError('Lỗi khi cập nhật firmware')
             finish()
           }
         })
@@ -75,8 +90,10 @@ const useUpdateFirmwareHook = () => {
   useEffect(() => {
     const updatedAt = storageService.get('updatedAt') || ''
     if (updatedAt) setLastUpdateDate(updatedAt)
+    const versionStored = storageService.get('version') || '1.1.10'
+    setVersion(versionStored)
   }, [])
 
-  return { currentVersion, uploadProps, handleUpload, fileList, uploading: isLoading, lastUpdateDate }
+  return { version, uploadProps, handleUpload, fileList, uploading: isLoading, lastUpdateDate }
 }
 export default useUpdateFirmwareHook
