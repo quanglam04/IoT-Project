@@ -173,18 +173,18 @@ const exportESP32Report = async (req: AuthRequest, res: Response) => {
     const username = (req.user as jwt.JwtPayload).username
     const userRole = (req.user as jwt.JwtPayload).role
 
-    if(userRole !== 'ADMIN'){
-      logger.error('Bạn không có quyền hạn này')
-      return res.status(HTTPStatus.FORBIDDEN).json({
-        status: HTTPStatus.FORBIDDEN,
-        message: 'Bạn không có quyền hạn này',
-      })
-    }
+    // if(userRole !== 'ADMIN'){
+    //   logger.error('Bạn không có quyền hạn này')
+    //   return res.status(HTTPStatus.FORBIDDEN).json({
+    //     status: HTTPStatus.FORBIDDEN,
+    //     message: 'Bạn không có quyền hạn này',
+    //   })
+    // }
 
     const newAuditLog = new Audit({
       actor: username,
       event: AuditEvent.GET_ESP32_REPORT,
-      details: `Admin [${username}] đã xuất dữ liệu từ các cảm biến`
+      details: `Người dùng [${username}] đã xuất dữ liệu từ các cảm biến`
     })
     await newAuditLog.save()
 
@@ -238,19 +238,19 @@ const exportAiReport = async (req: AuthRequest, res: Response) => {
     const userRole = (req.user as jwt.JwtPayload).role;
 
     // Kiểm tra quyền ADMIN
-    if (userRole !== 'ADMIN') {
-      logger.error('Bạn không có quyền hạn này');
-      return res.status(HTTPStatus.FORBIDDEN).json({
-        status: HTTPStatus.FORBIDDEN,
-        message: 'Bạn không có quyền hạn này',
-      });
-    }
+    // if (userRole !== 'ADMIN') {
+    //   logger.error('Bạn không có quyền hạn này');
+    //   return res.status(HTTPStatus.FORBIDDEN).json({
+    //     status: HTTPStatus.FORBIDDEN,
+    //     message: 'Bạn không có quyền hạn này',
+    //   });
+    // }
 
     // Ghi log audit
     const newAuditLog = new Audit({
       actor: username,
       event: AuditEvent.GET_AI_REPORT,
-      details: `Admin [${username}] đã xuất báo cáo lịch tưới của AI`,
+      details: `Người dùng [${username}] đã xuất báo cáo lịch tưới của AI`,
     });
     await newAuditLog.save();
 
