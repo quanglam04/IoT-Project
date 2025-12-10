@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "network/mqtt_client.h"
+#include "network/wifi_dynamic.h"
 #include "network/ntp_time.h"
 #include "sensors/sensor_manager.h"
 #include "control/pump_control.h"
@@ -19,19 +20,7 @@ void setup() {
     Serial.println("==========================");
 
     // ====== WiFi ======
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    Serial.print("🔌 Connecting WiFi");
-    unsigned long start = millis();
-    while (WiFi.status() != WL_CONNECTED && millis() - start < 20000) {
-        Serial.print(".");
-        delay(500);
-    }
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.printf("\n✅ WiFi connected: %s\n", WiFi.localIP().toString().c_str());
-    } else {
-        Serial.println("\n❌ WiFi connect failed");
-    }
+    wifi_dynamic_init();
 
     // ====== Time (NTP) ======
     ntp_init();
